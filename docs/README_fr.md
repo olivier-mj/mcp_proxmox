@@ -6,12 +6,12 @@ Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller vot
 
 *   **Surveillance** :
     *   Liste des nœuds (CPU/RAM).
-    *   Liste des VMs et Containers (LXC) avec leur état.
+    *   Liste filtrable des VMs et Containers (LXC).
+    *   Configuration détaillée des machines (CPU, RAM, Disques).
     *   État des espaces de stockage (local, ceph, nfs...).
 *   **Pilotage** :
-    *   Démarrer (Start).
-    *   Arrêter (Shutdown propre ou Stop forcé).
-    *   Redémarrer (Reboot).
+    *   Démarrer, Arrêter, Redémarrer.
+    *   **Snapshots** : Liste, création et restauration de snapshots.
 *   **Sécurité** :
     *   Authentification via API Token (recommandé).
     *   Aucune suppression de machine possible.
@@ -60,7 +60,7 @@ docker-compose up -d --build
 
 ### Utilisation de l'image Docker
 
-Vous pouvez construire l'image localement (`docker build -t mcp-proxmox-image .`) ou utiliser l'image publiée via GitHub Packages (si configuré) : `ghcr.io/olivier-mj/mcp_proxmox:latest`.
+Vous pouvez construire l'image localement (`docker build -t mcp-proxmox-image .`) ou utiliser l'image officielle publiée sur **Docker Hub** : `oliviermj/mcp_proxmox:latest`.
 
 ### Claude Desktop / Gemini-CLI / Windsurf
 

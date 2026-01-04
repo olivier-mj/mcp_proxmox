@@ -6,12 +6,12 @@ A Python-based Model Context Protocol (MCP) server to manage and monitor your Pr
 
 *   **Monitoring**:
     *   List nodes (CPU/RAM usage).
-    *   List VMs and Containers (LXC) with their status.
+    *   Filterable list of VMs and Containers (LXC).
+    *   Detailed machine configuration (CPU, RAM, Disks).
     *   Storage status (local, ceph, nfs...).
 *   **Management**:
-    *   Start machine.
-    *   Stop machine (Graceful shutdown or Forced stop).
-    *   Reboot machine.
+    *   Start, Stop, Reboot machine.
+    *   **Snapshots**: List, create, and restore snapshots.
 *   **Security**:
     *   Authentication via API Token (recommended).
     *   **No deletion**: Deleting machines is disabled for safety.
@@ -60,7 +60,7 @@ docker-compose up -d --build
 
 ### Using Docker Image
 
-You can build the image locally (`docker build -t mcp-proxmox-image .`) or use the public image from GitHub Packages (if configured): `ghcr.io/olivier-mj/mcp_proxmox:latest`.
+You can build the image locally (`docker build -t mcp-proxmox-image .`) or use the official image published on **Docker Hub**: `oliviermj/mcp_proxmox:latest`.
 
 ### Claude Desktop / Gemini-CLI / Windsurf
 

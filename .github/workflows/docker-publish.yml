@@ -1,48 +1,88 @@
-name: Create and publish a Docker image
+name: Docker Image CI
 
 on:
   push:
-    branches: ['main']
+    branches: [ "main" ]
     tags: ['v*']
-
-env:
-  # Use docker.io for Docker Hub
-  REGISTRY: docker.io
-  # Correct Docker Hub account
-  IMAGE_NAME: oliviermj/mcp_proxmox
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  build-and-push-image:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-      attestations: write
-      id-token: write
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+      # On garde l'action officielle qui est plus robuste que le git clone manuel
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Set up environment variables
+      run: |
+        # Variables de base
+        # ADAPTATION: Nom de l'image changé pour mcp_proxmox
+        IMAGE_BASE_NAME="${{ secrets.DOCKER_USERNAME }}/mcp_proxmox"
+        
+        echo "DOCKER_IMAGE=$IMAGE_BASE_NAME" >> $GITHUB_ENV
+        echo "BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
+        echo "BUILD_DATE_SHORT=$(date -u +'%Y%m%d')" >> $GITHUB_ENV
+        echo "BUILD_TIMESTAMP=$(date -u +'%Y%m%d-%H%M%S')" >> $GITHUB_ENV
+        echo "COMMIT_SHA_SHORT=${GITHUB_SHA:0:8}" >> $GITHUB_ENV
+        
+        # Détermination des tags selon le contexte
+        if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+          # Pull Request : Tag spécifique PR
+          echo "IMAGE_TAGS=${IMAGE_BASE_NAME}:pr-${{ github.event.number }},${IMAGE_BASE_NAME}:commit-${GITHUB_SHA}" >> $GITHUB_ENV
+        
+        elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          # Branche principale : Latest, Stable, Commit SHA, Date
+          echo "IMAGE_TAGS=${IMAGE_BASE_NAME}:latest,${IMAGE_BASE_NAME}:stable,${IMAGE_BASE_NAME}:main-${GITHUB_SHA:0:8},${IMAGE_BASE_NAME}:commit-${GITHUB_SHA},${IMAGE_BASE_NAME}:$(date -u +'%Y%m%d')" >> $GITHUB_ENV
+        
+        elif [[ "${{ github.ref }}" == "refs/tags/"* ]]; then
+           # Release Tags (v1.0.0...)
+           TAG_NAME=${GITHUB_REF#refs/tags/}
+           echo "IMAGE_TAGS=${IMAGE_BASE_NAME}:${TAG_NAME},${IMAGE_BASE_NAME}:latest" >> $GITHUB_ENV
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.IMAGE_NAME }}
-          tags: |
-            type=raw,value=latest,enable=${{ github.ref == 'format("refs/heads/{0}", "main")' }}
-            type=ref,event=tag
+        else
+          # Autres branches
+          BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | sed 's/[^a-zA-Z0-9._-]/-/g')
+          echo "IMAGE_TAGS=${IMAGE_BASE_NAME}:branch-${BRANCH_NAME}" >> $GITHUB_ENV
+        fi
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+    - name: Login to Docker Hub
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build Docker image with labels
+      run: |
+        docker build \
+          --label "org.opencontainers.image.title=Proxmox MCP Server" \
+          --label "org.opencontainers.image.description=MCP Server for Proxmox VE monitoring and management" \
+          --label "org.opencontainers.image.vendor=${{ github.repository_owner }}" \
+          --label "org.opencontainers.image.created=${BUILD_DATE}" \
+          --label "org.opencontainers.image.revision=${GITHUB_SHA}" \
+          --label "org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" \
+          --label "org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}" \
+          --label "org.opencontainers.image.documentation=${{ github.server_url }}/${{ github.repository }}/blob/main/README.md" \
+          --label "org.opencontainers.image.ref.name=${{ github.ref_name }}" \
+          --label "org.opencontainers.image.version=${GITHUB_SHA:0:8}" \
+          -f Dockerfile \
+          -t temp-build-image \
+          .
+
+    - name: Tag and push images
+      run: |
+        # Conversion de la variable IMAGE_TAGS en tableau
+        IFS=',' read -ra TAGS <<< "$IMAGE_TAGS"
+        
+        # Tag et push de chaque image
+        for tag in "${TAGS[@]}"; do
+          echo "Tagging and pushing: $tag"
+          docker tag temp-build-image "$tag"
+          docker push "$tag"
+        done
+
+    - name: Cleanup
+      if: always()
+      run: |
+        docker logout
+        docker rmi temp-build-image || true

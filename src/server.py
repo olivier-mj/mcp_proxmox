@@ -14,7 +14,12 @@ except Exception as e:
 
 @mcp.tool()
 def list_infrastructure():
-    """Liste tous les nœuds du cluster Proxmox avec leur statut CPU et RAM."""
+    """
+    Lists all nodes in the Proxmox cluster with their CPU and RAM usage.
+    
+    Returns:
+        str: A formatted string summarizing the infrastructure status.
+    """
     if not proxmox: return "Client Proxmox non configuré."
     try:
         nodes = proxmox.get_nodes()
@@ -31,10 +36,15 @@ def list_infrastructure():
 @mcp.tool()
 def list_machines(name_filter: str = None, status_filter: str = None, type_filter: str = None):
     """
-    Liste toutes les VMs et Containers (LXC) avec options de filtrage.
-    - name_filter: (Optionnel) Filtrer par nom (ex: 'ubuntu')
-    - status_filter: (Optionnel) 'running' ou 'stopped'
-    - type_filter: (Optionnel) 'qemu' ou 'lxc'
+    Lists all VMs and Containers (LXC) with optional filtering.
+
+    Args:
+        name_filter (str, optional): Filter by name substring (case-insensitive).
+        status_filter (str, optional): Filter by status ('running' or 'stopped').
+        type_filter (str, optional): Filter by type ('qemu' or 'lxc').
+
+    Returns:
+        str: A formatted list of machines matching the criteria.
     """
     if not proxmox: return "Client Proxmox non configuré."
     try:
@@ -67,7 +77,12 @@ def list_machines(name_filter: str = None, status_filter: str = None, type_filte
 
 @mcp.tool()
 def list_storage():
-    """Affiche l'état des stockages sur tous les nœuds."""
+    """
+    Displays the storage status for all nodes.
+
+    Returns:
+        str: A formatted string showing used/total space for each storage.
+    """
     if not proxmox: return "Client Proxmox non configuré."
     try:
         nodes = proxmox.get_nodes()
@@ -88,10 +103,12 @@ def list_storage():
 @mcp.tool()
 def start_machine(vmid: int, node: str, type: str):
     """
-    Démarre une machine spécifique.
-    - vmid: ID de la machine (ex: 100)
-    - node: Nom du nœud (ex: 'pve')
-    - type: 'qemu' pour VM ou 'lxc' pour container
+    Starts a specific machine.
+
+    Args:
+        vmid (int): Machine ID (e.g., 100).
+        node (str): Node name (e.g., 'pve').
+        type (str): 'qemu' (VM) or 'lxc' (Container).
     """
     if not proxmox: return "Client Proxmox non configuré."
     try:
@@ -103,11 +120,13 @@ def start_machine(vmid: int, node: str, type: str):
 @mcp.tool()
 def stop_machine(vmid: int, node: str, type: str, force: bool = False):
     """
-    Arrête une machine spécifique.
-    - vmid: ID de la machine
-    - node: Nom du nœud
-    - type: 'qemu' ou 'lxc'
-    - force: Si True, force l'arrêt (stop), sinon fait un arrêt propre (shutdown).
+    Stops a specific machine.
+
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+        force (bool): If True, forces a hard stop. If False (default), attempts a graceful shutdown.
     """
     if not proxmox: return "Client Proxmox non configuré."
     action = 'stop' if force else 'shutdown'
@@ -120,7 +139,14 @@ def stop_machine(vmid: int, node: str, type: str, force: bool = False):
 
 @mcp.tool()
 def reboot_machine(vmid: int, node: str, type: str):
-    """Redémarre une machine spécifique."""
+    """
+    Reboots a specific machine.
+
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+    """
     if not proxmox: return "Client Proxmox non configuré."
     try:
         proxmox.set_machine_state(node, vmid, type, 'reboot')
@@ -130,7 +156,14 @@ def reboot_machine(vmid: int, node: str, type: str):
 
 @mcp.tool()
 def get_machine_config(vmid: int, node: str, type: str):
-    """Récupère la configuration détaillée d'une machine (CPU, RAM, Disque, etc.)."""
+    """
+    Retrieves the detailed configuration (CPU, RAM, Disks, etc.) of a machine.
+
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+    """
     if not proxmox: return "Client Proxmox non configuré."
     try:
         config = proxmox.get_machine_config(node, vmid, type)
@@ -143,7 +176,14 @@ def get_machine_config(vmid: int, node: str, type: str):
 
 @mcp.tool()
 def list_snapshots(vmid: int, node: str, type: str):
-    """Liste les snapshots disponibles pour une machine donnée."""
+    """
+    Lists available snapshots for a machine.
+
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+    """
     if not proxmox: return "Client Proxmox non configuré."
     try:
         snaps = proxmox.list_snapshots(node, vmid, type)
@@ -158,7 +198,16 @@ def list_snapshots(vmid: int, node: str, type: str):
 
 @mcp.tool()
 def create_snapshot(vmid: int, node: str, type: str, snapname: str, description: str = None):
-    """Crée un snapshot pour une machine."""
+    """
+    Creates a snapshot for a machine.
+
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+        snapname (str): Name of the snapshot (no spaces recommended).
+        description (str, optional): Short description.
+    """
     if not proxmox: return "Client Proxmox non configuré."
     try:
         proxmox.create_snapshot(node, vmid, type, snapname, description)
@@ -168,7 +217,16 @@ def create_snapshot(vmid: int, node: str, type: str, snapname: str, description:
 
 @mcp.tool()
 def rollback_snapshot(vmid: int, node: str, type: str, snapname: str):
-    """Restaure une machine à un snapshot précédent (Attention : perte de données actuelles)."""
+    """
+    Rolls back a machine to a previous snapshot.
+    WARNING: Current state will be lost.
+
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+        snapname (str): Name of the snapshot to restore.
+    """
     if not proxmox: return "Client Proxmox non configuré."
     try:
         proxmox.rollback_snapshot(node, vmid, type, snapname)

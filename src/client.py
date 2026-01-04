@@ -6,7 +6,20 @@ from urllib.parse import urlparse
 load_dotenv()
 
 class ProxmoxClient:
+    """
+    Client wrapper for interacting with the Proxmox VE API.
+    
+    Handles authentication via API Tokens and provides simplified methods
+    for common operations like listing nodes, managing VMs/LXC, and snapshots.
+    """
+
     def __init__(self):
+        """
+        Initializes the Proxmox API client using environment variables.
+
+        Raises:
+            ValueError: If required environment variables are missing.
+        """
         url = os.getenv("PROXMOX_URL")
         if not url:
             raise ValueError("PROXMOX_URL is not set in .env")
@@ -23,7 +36,6 @@ class ProxmoxClient:
         if not all([user, token_id, token_secret]):
             raise ValueError("Proxmox credentials (USER, TOKEN_ID, TOKEN_SECRET) are missing in .env")
 
-        
         # Debugging credentials (security-safe)
         # print(f"DEBUG: Host={host}, User={user}, TokenID={token_id}")
 
@@ -37,11 +49,22 @@ class ProxmoxClient:
         )
 
     def get_nodes(self):
-        """Liste tous les nœuds du cluster."""
+        """
+        Lists all nodes in the Proxmox cluster.
+
+        Returns:
+            list: A list of dictionaries containing node information.
+        """
         return self.api.nodes.get()
 
     def get_all_machines(self):
-        """Récupère toutes les VMs et Containers sur tous les nœuds."""
+        """
+        Retrieves all VMs (QEMU) and Containers (LXC) across all nodes.
+
+        Returns:
+            list: A unified list of dictionaries for both VMs and LXCs,
+                  including an extra 'type' field ('qemu' or 'lxc').
+        """
         machines = []
         for node in self.get_nodes():
             node_name = node['node']
@@ -70,8 +93,19 @@ class ProxmoxClient:
 
     def set_machine_state(self, node, vmid, machine_type, action):
         """
-        Change l'état d'une machine (start, stop, shutdown, reboot).
-        machine_type doit être 'qemu' ou 'lxc'.
+        Changes the state of a specific machine.
+
+        Args:
+            node (str): The name of the node where the machine is located.
+            vmid (int): The ID of the machine.
+            machine_type (str): 'qemu' for VMs or 'lxc' for containers.
+            action (str): The action to perform ('start', 'stop', 'shutdown', 'reboot').
+
+        Returns:
+            str: Task ID of the operation.
+
+        Raises:
+            ValueError: If machine_type is invalid.
         """
         if machine_type == 'qemu':
             return self.api.nodes(node).qemu(vmid).status.post(action)
@@ -81,33 +115,92 @@ class ProxmoxClient:
             raise ValueError("machine_type doit être 'qemu' ou 'lxc'")
 
     def get_node_resources(self, node):
-        """Récupère l'état des ressources d'un nœud spécifique."""
+        """
+        Retrieves resource usage statistics for a specific node.
+
+        Args:
+            node (str): Node name.
+
+        Returns:
+            dict: Dictionary containing cpu, memory, etc.
+        """
         return self.api.nodes(node).status.get()
 
     def get_storage_status(self, node):
-        """Récupère l'état des stockages sur un nœud spécifique."""
+        """
+        Retrieves storage status for a specific node.
+
+        Args:
+            node (str): Node name.
+
+        Returns:
+            list: List of storage devices and their usage.
+        """
         return self.api.nodes(node).storage.get()
 
     def get_machine_config(self, node, vmid, machine_type):
-        """Récupère la configuration détaillée d'une machine."""
+        """
+        Retrieves the detailed configuration of a machine.
+
+        Args:
+            node (str): Node name.
+            vmid (int): Machine ID.
+            machine_type (str): 'qemu' or 'lxc'.
+
+        Returns:
+            dict: Configuration parameters (cores, memory, net, etc.).
+        """
         if machine_type == 'qemu':
             return self.api.nodes(node).qemu(vmid).config.get()
         return self.api.nodes(node).lxc(vmid).config.get()
 
     def list_snapshots(self, node, vmid, machine_type):
-        """Liste les snapshots d'une machine."""
+        """
+        Lists snapshots for a specific machine.
+
+        Args:
+            node (str): Node name.
+            vmid (int): Machine ID.
+            machine_type (str): 'qemu' or 'lxc'.
+
+        Returns:
+            list: List of snapshot dictionaries.
+        """
         if machine_type == 'qemu':
             return self.api.nodes(node).snapshot.get()
         return self.api.nodes(node).lxc(vmid).snapshot.get()
 
     def create_snapshot(self, node, vmid, machine_type, snapname, description="Created via MCP"):
-        """Crée un nouveau snapshot."""
+        """
+        Creates a new snapshot.
+
+        Args:
+            node (str): Node name.
+            vmid (int): Machine ID.
+            machine_type (str): 'qemu' or 'lxc'.
+            snapname (str): Name of the snapshot.
+            description (str, optional): Description of the snapshot.
+
+        Returns:
+            str: Task ID.
+        """
         if machine_type == 'qemu':
             return self.api.nodes(node).snapshot.post(snapname=snapname, description=description)
         return self.api.nodes(node).lxc(vmid).snapshot.post(snapname=snapname, description=description)
 
     def rollback_snapshot(self, node, vmid, machine_type, snapname):
-        """Restaure un snapshot spécifique."""
+        """
+        Rolls back to a specific snapshot.
+
+        Args:
+            node (str): Node name.
+            vmid (int): Machine ID.
+            machine_type (str): 'qemu' or 'lxc'.
+            snapname (str): Name of the snapshot to restore.
+
+        Returns:
+            str: Task ID.
+        """
         if machine_type == 'qemu':
             return self.api.nodes(node).snapshot(snapname).rollback.post()
         return self.api.nodes(node).lxc(vmid).snapshot(snapname).rollback.post()

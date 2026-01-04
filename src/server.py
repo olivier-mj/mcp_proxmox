@@ -29,15 +29,31 @@ def list_infrastructure():
         return f"Erreur lors de la récupération de l'infrastructure : {e}"
 
 @mcp.tool()
-def list_machines():
-    """Liste toutes les VMs et Containers (LXC) sur tous les nœuds."""
+def list_machines(name_filter: str = None, status_filter: str = None, type_filter: str = None):
+    """
+    Liste toutes les VMs et Containers (LXC) avec options de filtrage.
+    - name_filter: (Optionnel) Filtrer par nom (ex: 'ubuntu')
+    - status_filter: (Optionnel) 'running' ou 'stopped'
+    - type_filter: (Optionnel) 'qemu' ou 'lxc'
+    """
     if not proxmox: return "Client Proxmox non configuré."
     try:
         machines = proxmox.get_all_machines()
         if not machines:
             return "Aucune machine trouvée."
         
-        result = "Liste des machines (VMs & LXC) :\n"
+        # Application des filtres
+        if name_filter:
+            machines = [m for m in machines if name_filter.lower() in m.get('name', '').lower()]
+        if status_filter:
+            machines = [m for m in machines if m.get('status') == status_filter.lower()]
+        if type_filter:
+            machines = [m for m in machines if m.get('type') == type_filter.lower()]
+
+        if not machines:
+            return "Aucune machine ne correspond aux filtres."
+
+        result = f"Liste des machines ({len(machines)}) :\n"
         for m in machines:
             vmid = m.get('vmid')
             name = m.get('name')
@@ -111,6 +127,54 @@ def reboot_machine(vmid: int, node: str, type: str):
         return f"Commande de redémarrage envoyée pour la machine {vmid} ({type}) sur le nœud {node}."
     except Exception as e:
         return f"Erreur lors du redémarrage : {e}"
+
+@mcp.tool()
+def get_machine_config(vmid: int, node: str, type: str):
+    """Récupère la configuration détaillée d'une machine (CPU, RAM, Disque, etc.)."""
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        config = proxmox.get_machine_config(node, vmid, type)
+        result = f"Configuration de la machine {vmid} ({type}) :\n"
+        for key, value in config.items():
+            result += f"  - {key}: {value}\n"
+        return result
+    except Exception as e:
+        return f"Erreur lors de la récupération de la config : {e}"
+
+@mcp.tool()
+def list_snapshots(vmid: int, node: str, type: str):
+    """Liste les snapshots disponibles pour une machine donnée."""
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        snaps = proxmox.list_snapshots(node, vmid, type)
+        if not snaps: return "Aucun snapshot trouvé."
+        result = f"Snapshots pour la machine {vmid} :\n"
+        for s in snaps:
+            desc = s.get('description', 'Sans description')
+            result += f"  - {s['name']} (Date: {s.get('snaptime', 'Inconnue')}) | {desc}\n"
+        return result
+    except Exception as e:
+        return f"Erreur lors de la récupération des snapshots : {e}"
+
+@mcp.tool()
+def create_snapshot(vmid: int, node: str, type: str, snapname: str, description: str = None):
+    """Crée un snapshot pour une machine."""
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.create_snapshot(node, vmid, type, snapname, description)
+        return f"Snapshot '{snapname}' en cours de création pour la machine {vmid}."
+    except Exception as e:
+        return f"Erreur lors de la création du snapshot : {e}"
+
+@mcp.tool()
+def rollback_snapshot(vmid: int, node: str, type: str, snapname: str):
+    """Restaure une machine à un snapshot précédent (Attention : perte de données actuelles)."""
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.rollback_snapshot(node, vmid, type, snapname)
+        return f"Restauration du snapshot '{snapname}' lancée pour la machine {vmid}."
+    except Exception as e:
+        return f"Erreur lors de la restauration : {e}"
 
 if __name__ == "__main__":
     mcp.run()

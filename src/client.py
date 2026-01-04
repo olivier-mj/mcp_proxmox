@@ -87,3 +87,27 @@ class ProxmoxClient:
     def get_storage_status(self, node):
         """Récupère l'état des stockages sur un nœud spécifique."""
         return self.api.nodes(node).storage.get()
+
+    def get_machine_config(self, node, vmid, machine_type):
+        """Récupère la configuration détaillée d'une machine."""
+        if machine_type == 'qemu':
+            return self.api.nodes(node).qemu(vmid).config.get()
+        return self.api.nodes(node).lxc(vmid).config.get()
+
+    def list_snapshots(self, node, vmid, machine_type):
+        """Liste les snapshots d'une machine."""
+        if machine_type == 'qemu':
+            return self.api.nodes(node).snapshot.get()
+        return self.api.nodes(node).lxc(vmid).snapshot.get()
+
+    def create_snapshot(self, node, vmid, machine_type, snapname, description="Created via MCP"):
+        """Crée un nouveau snapshot."""
+        if machine_type == 'qemu':
+            return self.api.nodes(node).snapshot.post(snapname=snapname, description=description)
+        return self.api.nodes(node).lxc(vmid).snapshot.post(snapname=snapname, description=description)
+
+    def rollback_snapshot(self, node, vmid, machine_type, snapname):
+        """Restaure un snapshot spécifique."""
+        if machine_type == 'qemu':
+            return self.api.nodes(node).snapshot(snapname).rollback.post()
+        return self.api.nodes(node).lxc(vmid).snapshot(snapname).rollback.post()

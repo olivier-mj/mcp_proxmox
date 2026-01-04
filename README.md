@@ -12,6 +12,15 @@ Please select your language / Veuillez choisir votre langue :
 *   [🇫🇷 **Documentation en Français**](docs/README_fr.md)
 *   [🇺🇸 **English Documentation**](docs/README_en.md)
 
+## 🔑 Proxmox API Token
+
+To use this server, you need a Proxmox API Token.
+*Pour utiliser ce serveur, vous avez besoin d'un Token API Proxmox.*
+
+1.  **Datacenter > Permissions > API Tokens** > **Add**.
+2.  Select user, set ID (e.g., `mcp`), and **uncheck** "Privilege Separation".
+3.  Copy the Token ID and Secret.
+
 ## 🚀 Quick Start (Docker)
 
 1.  Clone this repo.

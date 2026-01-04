@@ -1,0 +1,12 @@
+services:
+  mcp-proxmox:
+    build: .
+    container_name: mcp-proxmox
+    env_file:
+      - .env
+    restart: unless-stopped
+    # Le serveur MCP communique généralement via stdio ou sse.
+    # Pour un usage avec Claude Desktop, le mode stdio est privilégié.
+    # Dans un conteneur, il faut s'assurer que l'entrée/sortie standard est accessible.
+    stdin_open: true
+    tty: true

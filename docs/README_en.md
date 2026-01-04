@@ -17,6 +17,17 @@ A Python-based Model Context Protocol (MCP) server to manage and monitor your Pr
     *   **No deletion**: Deleting machines is disabled for safety.
     *   Isolated execution via Docker.
 
+## Proxmox Preparation (API Token Creation)
+
+To allow the AI to access your server, you need to create an API Token:
+
+1.  Log in to your Proxmox web interface.
+2.  Go to **Datacenter** > **Permissions** > **API Tokens**.
+3.  Click **Add**.
+4.  Select your user (e.g., `root@pam`) and give the token an ID (e.g., `mcp`).
+5.  **Important**: Uncheck "Privilege Separation" for simplicity, or ensure the token has appropriate permissions (PVEVMAdmin, PVEAuditor).
+6.  Copy the **Token ID** (e.g., `mcp`) and the **Secret** (only shown once).
+
 ## Prerequisites
 
 *   Accessible Proxmox VE server.

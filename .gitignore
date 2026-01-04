@@ -29,6 +29,7 @@ wheels/
 
 # Docker
 .dockerignore
+docs/DOCKER_HUB_README.md
 
 # IDE
 .vscode/

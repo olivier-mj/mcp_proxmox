@@ -17,6 +17,17 @@ Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller vot
     *   Aucune suppression de machine possible.
     *   Exécution isolée via Docker.
 
+## Préparation de Proxmox (Création du Token)
+
+Pour que l'IA puisse accéder à votre serveur, vous devez créer un Token API :
+
+1.  Connectez-vous à votre interface Proxmox.
+2.  Allez dans **Datacenter** > **Permissions** > **API Tokens**.
+3.  Cliquez sur **Add**.
+4.  Sélectionnez votre utilisateur (ex: `root@pam`) et donnez un ID au token (ex: `mcp`).
+5.  **Important** : Décochez "Privilege Separation" pour plus de simplicité, ou assurez-vous que le token a les permissions nécessaires (PVEVMAdmin, PVEAuditor).
+6.  Copiez le **Token ID** (ex: `mcp`) et le **Secret** qui s'affiche une seule fois.
+
 ## Prérequis
 
 *   Un serveur Proxmox VE accessible.

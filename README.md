@@ -1,9 +1,18 @@
 # Proxmox MCP Server
 
+[![Docker Image CI](https://github.com/olivier-mj/mcp_proxmox/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/olivier-mj/mcp_proxmox/actions/workflows/docker-publish.yml)
+
 **Manage your Proxmox VE infrastructure using AI.**
 *Pilotez votre infrastructure Proxmox VE grâce à l'IA.*
 
 This MCP (Model Context Protocol) server allows LLMs (like Claude, Gemini, etc.) to securely monitor and control your Proxmox nodes, VMs, and containers.
+
+## 🌟 Features
+
+- 📊 **Monitoring**: View nodes (CPU/RAM), VMs, containers (LXC), and storage status.
+- ⚡ **Management**: Start, stop (graceful/forced), and reboot machines.
+- 🔒 **Secure**: Uses Proxmox API Tokens. **Machine deletion is disabled** for safety.
+- 🐳 **Docker-ready**: Works instantly with `docker run`.
 
 ## 📚 Documentation
 
@@ -20,6 +29,16 @@ To use this server, you need a Proxmox API Token.
 1.  **Datacenter > Permissions > API Tokens** > **Add**.
 2.  Select user, set ID (e.g., `mcp`), and **uncheck** "Privilege Separation".
 3.  Copy the Token ID and Secret.
+
+## ⚙️ Environment Variables
+
+| Variable | Description | Example |
+|---|---|---|
+| `PROXMOX_URL` | URL of your Proxmox server | `https://192.168.1.10:8006` |
+| `PROXMOX_USER` | User (usually root@pam) | `root@pam` |
+| `PROXMOX_TOKEN_ID` | API Token Name **(just the name)** | `mcp_token` |
+| `PROXMOX_TOKEN_SECRET` | API Token Secret | `xxxxxxxx-xxxx-xxxx...` |
+| `PROXMOX_VERIFY_SSL` | Verify SSL Certificate | `false` (for self-signed) |
 
 ## 🚀 Quick Start (Docker)
 

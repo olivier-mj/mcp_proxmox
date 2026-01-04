@@ -76,6 +76,31 @@ Ces clients utilisent une structure JSON similaire. Ajoutez la configuration à 
 }
 ```
 
+### Alternative : Configuration directe (Sans fichier .env)
+
+Si vous ne souhaitez pas gérer de fichier `.env`, vous pouvez passer les variables directement dans la configuration JSON. Attention, vos secrets seront visibles dans ce fichier.
+
+```json
+{
+  "mcpServers": {
+    "proxmox": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e", "PROXMOX_URL=https://192.168.1.100:8006",
+        "-e", "PROXMOX_USER=root@pam",
+        "-e", "PROXMOX_TOKEN_ID=mcp_token",
+        "-e", "PROXMOX_TOKEN_SECRET=votre_secret_ici",
+        "-e", "PROXMOX_VERIFY_SSL=false",
+        "mcp-proxmox-image"
+      ]
+    }
+  }
+}
+```
+
 ### Cursor (IDE)
 
 1.  Allez dans **Cursor Settings** > **Features** > **MCP**.

@@ -65,11 +65,35 @@ These clients use a similar JSON structure. Add the configuration to your respec
       "command": "docker",
       "args": [
         "run",
-        "run",
         "-i",
         "--rm",
         "--env-file",
         "/absolute/path/to/your/folder/mcp_proxmox/.env",
+        "mcp-proxmox-image"
+      ]
+    }
+  }
+}
+```
+
+### Alternative: Direct Configuration (No .env file)
+
+If you prefer not to manage a `.env` file, you can pass environment variables directly in the JSON configuration. Be aware that your secrets will be visible in this file.
+
+```json
+{
+  "mcpServers": {
+    "proxmox": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e", "PROXMOX_URL=https://192.168.1.100:8006",
+        "-e", "PROXMOX_USER=root@pam",
+        "-e", "PROXMOX_TOKEN_ID=mcp_token",
+        "-e", "PROXMOX_TOKEN_SECRET=your_secret_here",
+        "-e", "PROXMOX_VERIFY_SSL=false",
         "mcp-proxmox-image"
       ]
     }

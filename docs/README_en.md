@@ -1,0 +1,96 @@
+# Proxmox MCP Server (EN Documentation)
+
+A Python-based Model Context Protocol (MCP) server to manage and monitor your Proxmox VE infrastructure via AI.
+
+## Features
+
+*   **Monitoring**:
+    *   List nodes (CPU/RAM usage).
+    *   List VMs and Containers (LXC) with their status.
+    *   Storage status (local, ceph, nfs...).
+*   **Management**:
+    *   Start machine.
+    *   Stop machine (Graceful shutdown or Forced stop).
+    *   Reboot machine.
+*   **Security**:
+    *   Authentication via API Token (recommended).
+    *   **No deletion**: Deleting machines is disabled for safety.
+    *   Isolated execution via Docker.
+
+## Prerequisites
+
+*   Accessible Proxmox VE server.
+*   Docker & Docker Compose installed locally.
+*   Compatible MCP Client (Claude Desktop, Cursor, Gemini-CLI, etc.).
+
+## Installation
+
+### 1. Secrets Configuration
+
+Create a `.env` file at the root of the project:
+
+```env
+PROXMOX_URL=https://192.168.1.100:8006
+PROXMOX_USER=root@pam
+PROXMOX_TOKEN_ID=mcp_token       # Just the token name (NOT root@pam!mcp_token)
+PROXMOX_TOKEN_SECRET=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+PROXMOX_VERIFY_SSL=false         # false if using self-signed certificate
+```
+
+### 2. Start (Docker)
+
+Using Docker is recommended for isolation.
+
+```bash
+docker-compose up -d --build
+```
+
+## Integrations
+
+### Using Docker Image
+
+You can build the image locally (`docker build -t mcp-proxmox-image .`) or use the public image from GitHub Packages (if configured): `ghcr.io/olivier-mj/mcp_proxmox:latest`.
+
+### Claude Desktop / Gemini-CLI / Windsurf
+
+These clients use a similar JSON structure. Add the configuration to your respective file:
+- **Claude**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Gemini-CLI**: `~/.gemini/settings.json`
+- **Windsurf**: `~/.codeium/windsurf/mcp_config.json`
+
+```json
+{
+  "mcpServers": {
+    "proxmox": {
+      "command": "docker",
+      "args": [
+        "run",
+        "run",
+        "-i",
+        "--rm",
+        "--env-file",
+        "/absolute/path/to/your/folder/mcp_proxmox/.env",
+        "mcp-proxmox-image"
+      ]
+    }
+  }
+}
+```
+
+### Cursor (IDE)
+
+1.  Go to **Cursor Settings** > **Features** > **MCP**.
+2.  Click on **+ Add New MCP Server**.
+3.  Fill in the details:
+    *   **Name**: `proxmox`
+    *   **Type**: `command`
+    *   **Command**: `docker run -i --rm --env-file /absolute/path/to/your/folder/mcp_proxmox/.env mcp-proxmox-image`
+
+## Local Development (No Docker)
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python -m src.server
+```

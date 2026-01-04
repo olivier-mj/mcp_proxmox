@@ -1,6 +1,6 @@
 # Proxmox MCP Server
 
-Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller votre infrastructure Proxmox VE via une IA (comme Claude Desktop, Cursor, etc.).
+Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller votre infrastructure Proxmox VE via une IA (comme Claude Desktop, Cursor, Gemini-CLI, etc.).
 
 *(English version below)*
 
@@ -51,9 +51,12 @@ docker-compose up -d --build
 
 ### Intégrations
 
-#### Claude Desktop
+#### Claude Desktop / Gemini-CLI / Windsurf
 
-Ajoutez ceci à votre fichier de configuration (`claude_desktop_config.json`) :
+Ces clients utilisent une structure JSON similaire. Ajoutez la configuration à votre fichier respectif :
+- **Claude** : `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Gemini-CLI** : `~/.gemini/settings.json`
+- **Windsurf** : `~/.codeium/windsurf/mcp_config.json`
 
 ```json
 {
@@ -82,10 +85,6 @@ Ajoutez ceci à votre fichier de configuration (`claude_desktop_config.json`) :
     *   **Name**: `proxmox`
     *   **Type**: `command`
     *   **Command**: `docker run -i --rm --env-file /chemin/absolu/vers/votre/dossier/mcp_proxmox/.env mcp-proxmox-image`
-
-#### Windsurf (IDE)
-
-Windsurf supporte également MCP. Configurez-le via le fichier de configuration MCP de l'IDE (souvent situé dans `~/.codeium/windsurf/mcp_config.json` ou via l'interface) en utilisant la même structure JSON que pour Claude Desktop.
 
 ---
 
@@ -136,9 +135,12 @@ docker-compose up -d --build
 
 ### Integrations
 
-#### Claude Desktop
+#### Claude Desktop / Gemini-CLI / Windsurf
 
-Add this to your configuration file (`claude_desktop_config.json`):
+These clients use a similar JSON structure. Add the configuration to your respective file:
+- **Claude**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Gemini-CLI**: `~/.gemini/settings.json`
+- **Windsurf**: `~/.codeium/windsurf/mcp_config.json`
 
 ```json
 {
@@ -167,10 +169,6 @@ Add this to your configuration file (`claude_desktop_config.json`):
     *   **Name**: `proxmox`
     *   **Type**: `command`
     *   **Command**: `docker run -i --rm --env-file /absolute/path/to/your/folder/mcp_proxmox/.env mcp-proxmox-image`
-
-#### Windsurf (IDE)
-
-Windsurf also supports MCP. Configure it via the IDE's MCP configuration file (often located at `~/.codeium/windsurf/mcp_config.json` or via the UI) using the same JSON structure as Claude Desktop.
 
 ## Project Structure
 

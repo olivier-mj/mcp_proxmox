@@ -1,0 +1,5 @@
+theme: jekyll-theme-slate
+title: Proxmox MCP Server
+description: Manage your Proxmox VE infrastructure using AI with the Model Context Protocol.
+show_downloads: true
+google_analytics:

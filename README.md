@@ -1,6 +1,6 @@
 # Proxmox MCP Server
 
-Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller votre infrastructure Proxmox VE via une IA (comme Claude Desktop).
+Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller votre infrastructure Proxmox VE via une IA (comme Claude Desktop, Cursor, etc.).
 
 *(English version below)*
 
@@ -25,7 +25,7 @@ Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller vot
 
 *   Un serveur Proxmox VE accessible.
 *   Docker et Docker Compose installés sur votre machine locale.
-*   Un client MCP (ex: Claude Desktop).
+*   Un client MCP compatible.
 
 ### Installation
 
@@ -49,11 +49,11 @@ La méthode recommandée est d'utiliser Docker pour une isolation totale.
 docker-compose up -d --build
 ```
 
-#### 3. Intégration à Claude Desktop
+### Intégrations
 
-Ajoutez la configuration suivante à votre fichier de configuration Claude.
+#### Claude Desktop
 
-**Chemin du fichier config (Mac/Linux) :** `~/Library/Application Support/Claude/claude_desktop_config.json` ou `~/.config/Claude/claude_desktop_config.json`
+Ajoutez ceci à votre fichier de configuration (`claude_desktop_config.json`) :
 
 ```json
 {
@@ -72,8 +72,20 @@ Ajoutez la configuration suivante à votre fichier de configuration Claude.
   }
 }
 ```
+*N'oubliez pas de construire l'image :* `docker build -t mcp-proxmox-image .`
 
-*Attention : Construire l'image d'abord :* `docker build -t mcp-proxmox-image .`
+#### Cursor (IDE)
+
+1.  Allez dans **Cursor Settings** > **Features** > **MCP**.
+2.  Cliquez sur **+ Add New MCP Server**.
+3.  Remplissez les champs :
+    *   **Name**: `proxmox`
+    *   **Type**: `command`
+    *   **Command**: `docker run -i --rm --env-file /chemin/absolu/vers/votre/dossier/mcp_proxmox/.env mcp-proxmox-image`
+
+#### Windsurf (IDE)
+
+Windsurf supporte également MCP. Configurez-le via le fichier de configuration MCP de l'IDE (souvent situé dans `~/.codeium/windsurf/mcp_config.json` ou via l'interface) en utilisant la même structure JSON que pour Claude Desktop.
 
 ---
 
@@ -98,7 +110,7 @@ Ajoutez la configuration suivante à votre fichier de configuration Claude.
 
 *   Accessible Proxmox VE server.
 *   Docker & Docker Compose installed locally.
-*   MCP Client (e.g., Claude Desktop).
+*   Compatible MCP Client.
 
 ### Installation
 
@@ -122,11 +134,11 @@ Using Docker is recommended for isolation.
 docker-compose up -d --build
 ```
 
-#### 3. Claude Desktop Integration
+### Integrations
 
-Add the following configuration to your Claude config file.
+#### Claude Desktop
 
-**Config file path (Mac/Linux):** `~/Library/Application Support/Claude/claude_desktop_config.json` or `~/.config/Claude/claude_desktop_config.json`
+Add this to your configuration file (`claude_desktop_config.json`):
 
 ```json
 {
@@ -145,8 +157,20 @@ Add the following configuration to your Claude config file.
   }
 }
 ```
+*Don't forget to build the image:* `docker build -t mcp-proxmox-image .`
 
-*Note: Build the image first:* `docker build -t mcp-proxmox-image .`
+#### Cursor (IDE)
+
+1.  Go to **Cursor Settings** > **Features** > **MCP**.
+2.  Click on **+ Add New MCP Server**.
+3.  Fill in the details:
+    *   **Name**: `proxmox`
+    *   **Type**: `command`
+    *   **Command**: `docker run -i --rm --env-file /absolute/path/to/your/folder/mcp_proxmox/.env mcp-proxmox-image`
+
+#### Windsurf (IDE)
+
+Windsurf also supports MCP. Configure it via the IDE's MCP configuration file (often located at `~/.codeium/windsurf/mcp_config.json` or via the UI) using the same JSON structure as Claude Desktop.
 
 ## Project Structure
 

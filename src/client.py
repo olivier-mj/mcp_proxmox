@@ -204,3 +204,55 @@ class ProxmoxClient:
         if machine_type == 'qemu':
             return self.api.nodes(node).snapshot(snapname).rollback.post()
         return self.api.nodes(node).lxc(vmid).snapshot(snapname).rollback.post()
+
+    def clone_machine(self, node, vmid, newid, name, machine_type, target_node=None):
+        """
+        Clones a machine (VM or LXC).
+
+        Args:
+            node (str): Source node name.
+            vmid (int): Source machine ID (Template).
+            newid (int): New machine ID.
+            name (str): New machine name.
+            machine_type (str): 'qemu' or 'lxc'.
+            target_node (str, optional): Target node (if different from source). Defaults to None.
+
+        Returns:
+            str: Task ID.
+        """
+        params = {'newid': newid, 'name': name}
+        if target_node:
+            params['target'] = target_node
+
+        if machine_type == 'qemu':
+            return self.api.nodes(node).qemu(vmid).clone.post(**params)
+        elif machine_type == 'lxc':
+            # LXC cloning usually requires the source to be a template or stopped
+            return self.api.nodes(node).lxc(vmid).clone.post(**params)
+        else:
+            raise ValueError("machine_type doit être 'qemu' ou 'lxc'")
+
+    def get_vm_agent_network(self, node, vmid):
+        """Retrieves internal network interfaces via QEMU Guest Agent."""
+        return self.api.nodes(node).qemu(vmid).agent.network_get_interfaces.get()
+
+    def exec_agent_command(self, node, vmid, command):
+        """Executes a simple command via QEMU Guest Agent."""
+        # Note: Command execution via agent usually requires specific formatting
+        return self.api.nodes(node).qemu(vmid).agent.exec.post(command=command)
+
+    def list_backups(self, node, storage):
+        """Lists backups available on a specific storage."""
+        # Proxmox stores backups as content type 'backup'
+        return self.api.nodes(node).storage(storage).content.get(content='backup')
+
+    def create_backup(self, node, vmid, storage, mode='snapshot', compress='zstd'):
+        """Creates a new backup for a machine."""
+        return self.api.nodes(node).vzdump.post(vmid=vmid, storage=storage, mode=mode, compress=compress)
+
+    def get_console_url(self, node, vmid, machine_type):
+        """Constructs a direct link to the NoVNC console in the Proxmox Web UI."""
+        base_url = os.getenv("PROXMOX_URL").rstrip('/')
+        # Proxmox Web UI console URL format
+        # Note: The user must be logged into the Web UI for this link to work immediately.
+        return f"{base_url}/#v1:0:18:4:::::::{node}:{vmid}:novnc"

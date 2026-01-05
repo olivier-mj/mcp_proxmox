@@ -8,10 +8,14 @@ Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller vot
     *   Liste des nœuds (CPU/RAM).
     *   Liste filtrable des VMs et Containers (LXC).
     *   Configuration détaillée des machines (CPU, RAM, Disques).
+    *   **Diagnostic Avancé** : Récupération des IPs et infos réseau via l'agent QEMU.
     *   État des espaces de stockage (local, ceph, nfs...).
 *   **Pilotage** :
     *   Démarrer, Arrêter, Redémarrer.
+    *   **Console** : Génération de liens directs vers la console NoVNC.
+    *   **Provisioning** : Clonage de machines (Templates) vers de nouvelles VMs/CTs.
     *   **Snapshots** : Liste, création et restauration de snapshots.
+    *   **Backups** : Liste et création de sauvegardes complètes (vzdump).
 *   **Sécurité** :
     *   Authentification via API Token (recommandé).
     *   Aucune suppression de machine possible.

@@ -8,10 +8,14 @@ A Python-based Model Context Protocol (MCP) server to manage and monitor your Pr
     *   List nodes (CPU/RAM usage).
     *   Filterable list of VMs and Containers (LXC).
     *   Detailed machine configuration (CPU, RAM, Disks).
+    *   **Advanced Diagnostic**: Retrieve IPs and network info via QEMU Agent.
     *   Storage status (local, ceph, nfs...).
 *   **Management**:
     *   Start, Stop, Reboot machine.
+    *   **Console**: Generate direct NoVNC console links.
+    *   **Provisioning**: Clone machines (Templates) to new VMs/CTs.
     *   **Snapshots**: List, create, and restore snapshots.
+    *   **Backups**: List and create full backups (vzdump).
 *   **Security**:
     *   Authentication via API Token (recommended).
     *   **No deletion**: Deleting machines is disabled for safety.

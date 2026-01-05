@@ -9,6 +9,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
+# Créer un utilisateur non-root pour la sécurité
+RUN useradd -m -u 1000 appuser
+
 # Copier le fichier des dépendances
 COPY requirements.txt .
 
@@ -18,9 +21,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copier le code source
 COPY src/ ./src/
 
-# Définir les variables d'environnement par défaut (peuvent être surchargées par docker-compose ou -e)
+# Changer la propriété des fichiers pour l'utilisateur non-root
+RUN chown -R appuser:appuser /app
+
+# Basculer sur l'utilisateur non-root
+USER appuser
+
+# Définir les variables d'environnement par défaut
 ENV PYTHONUNBUFFERED=1
 
 # Commande pour lancer le serveur MCP
-# On utilise 'python -m src.server' si on veut lancer comme un module ou direct
 CMD ["python", "-m", "src.server"]

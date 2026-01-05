@@ -9,8 +9,10 @@ This MCP (Model Context Protocol) server allows LLMs (like Claude, Gemini, etc.)
 
 ## 🌟 Features
 
-- 📊 **Monitoring**: View nodes (CPU/RAM), VMs, containers (LXC), and storage status.
-- ⚡ **Management**: Start, stop (graceful/forced), and reboot machines.
+- 📊 **Monitoring**: View nodes (CPU/RAM), VMs, containers (LXC), storage status, and internal IPs (via Agent).
+- ⚡ **Management**: Start, stop (graceful/forced), reboot, and **Clone** (Provisioning) machines.
+- 🛡️ **Protection**: Manage **Snapshots** and **Backups** directly via MCP.
+- 🔗 **Access**: Generate direct links to the **NoVNC Console**.
 - 🔒 **Secure**: Uses Proxmox API Tokens. **Machine deletion is disabled** for safety.
 - 🐳 **Docker-ready**: Works instantly with `docker run`.
 

@@ -292,5 +292,119 @@ def rollback_snapshot(vmid: int, node: str, type: Literal['qemu', 'lxc'], snapna
         logger.error(f"Error in rollback_snapshot: {e}")
         return f"Erreur lors de la restauration : {e}"
 
+@mcp.tool()
+def clone_machine(vmid: int, node: str, type: Literal['qemu', 'lxc'], newid: int, name: str, target_node: Optional[str] = None):
+    """
+    Clones a machine (usually a template) to create a new one.
+
+    Args:
+        vmid (int): ID of the source machine/template.
+        node (str): Node where the source machine is located.
+        type (str): 'qemu' or 'lxc'.
+        newid (int): ID for the new machine (must be unique and > 100).
+        name (str): Name for the new machine.
+        target_node (str, optional): Target node for the new machine (if different).
+    """
+    logger.info(f"Tool called: clone_machine(source={vmid}, newid={newid}, name={name})")
+    if vmid < 100 or newid < 100: return "Erreur: Les IDs doivent être >= 100."
+    
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.clone_machine(node, vmid, newid, name, type, target_node)
+        return f"Clonage de {vmid} vers {newid} ({name}) lancé avec succès."
+    except Exception as e:
+        logger.error(f"Error in clone_machine: {e}")
+        return f"Erreur lors du clonage : {e}"
+
+@mcp.tool()
+def get_vm_agent_network(vmid: int, node: str):
+    """
+    Retrieves internal network information (IP addresses) from a VM.
+    Requires QEMU Guest Agent to be installed and enabled.
+
+    Args:
+        vmid (int): VM ID.
+        node (str): Node name.
+    """
+    logger.info(f"Tool called: get_vm_agent_network(vmid={vmid}, node={node})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        data = proxmox.get_vm_agent_network(node, vmid)
+        if not data: return "Aucune donnée réseau reçue (l'agent est-il activé ?)."
+        
+        result = f"Interfaces réseau internes pour VM {vmid} :\n"
+        for interface in data.get('result', []):
+            name = interface.get('name')
+            ips = [addr.get('ip-address') for addr in interface.get('ip-addresses', [])]
+            result += f"  - {name}: {', '.join(ips)}\n"
+        return result
+    except Exception as e:
+        logger.error(f"Error in get_vm_agent_network: {e}")
+        return f"Erreur lors de la communication avec l'agent : {e}. Assurez-vous que l'agent QEMU est actif sur la VM."
+
+@mcp.tool()
+def list_backups(node: str, storage: str):
+    """
+    Lists backups available on a specific storage.
+
+    Args:
+        node (str): Node name.
+        storage (str): Storage name (e.g., 'local', 'nas').
+    """
+    logger.info(f"Tool called: list_backups(node={node}, storage={storage})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        backups = proxmox.list_backups(node, storage)
+        if not backups: return f"Aucune sauvegarde trouvée sur {storage}."
+        
+        result = f"Sauvegardes sur {storage} ({len(backups)}) :\n"
+        for b in backups:
+            size_gb = b.get('size', 0) / (1024**3)
+            result += f"  - {b['volid']} ({size_gb:.2f} GB) | Date: {b.get('ctime', 'Inconnue')}\n"
+        return result
+    except Exception as e:
+        logger.error(f"Error in list_backups: {e}")
+        return f"Erreur lors de la récupération des sauvegardes : {e}"
+
+@mcp.tool()
+def create_backup(vmid: int, node: str, storage: str, mode: Literal['snapshot', 'suspend', 'stop'] = 'snapshot'):
+    """
+    Creates a new backup for a machine.
+
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        storage (str): Target storage for the backup.
+        mode (str): Backup mode ('snapshot' is default and recommended).
+    """
+    logger.info(f"Tool called: create_backup(vmid={vmid}, node={node}, storage={storage})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.create_backup(node, vmid, storage, mode)
+        return f"Tâche de sauvegarde lancée pour la machine {vmid} vers le stockage {storage}."
+    except Exception as e:
+        logger.error(f"Error in create_backup: {e}")
+        return f"Erreur lors du lancement de la sauvegarde : {e}"
+
+@mcp.tool()
+def get_console_url(vmid: int, node: str, type: Literal['qemu', 'lxc']):
+    """
+    Generates a direct link to the NoVNC console in the Proxmox Web UI.
+    Requires the user to be logged into the Proxmox Web interface.
+
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+    """
+    logger.info(f"Tool called: get_console_url(vmid={vmid}, node={node})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        url = proxmox.get_console_url(node, vmid, type)
+        return f"Lien vers la console NoVNC pour la machine {vmid} :\n{url}"
+    except Exception as e:
+        logger.error(f"Error in get_console_url: {e}")
+        return f"Erreur lors de la génération du lien : {e}"
+
 if __name__ == "__main__":
     mcp.run()

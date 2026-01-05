@@ -12,6 +12,14 @@ title: Home
 
 This MCP (Model Context Protocol) server allows LLMs (like Claude, Gemini, etc.) to securely monitor and control your Proxmox nodes, VMs, and containers.
 
+## 🌟 Key Features
+
+- 📊 **Advanced Monitoring**: View CPU/RAM, storage, and internal IPs.
+- ⚡ **Infrastructure Control**: Start, Stop, Reboot, and **Clone** machines.
+- 🛡️ **Data Protection**: Manage **Snapshots** and **Backups** (vzdump).
+- 🔗 **Direct Access**: Generate **NoVNC Console** links.
+- 🔒 **Safe & Secure**: API Token auth, isolated Docker environment, no destructive delete.
+
 ## 📚 Documentation
 
 Please select your language / Veuillez choisir votre langue :
@@ -25,10 +33,10 @@ Please select your language / Veuillez choisir votre langue :
 
 ```bash
 docker run -d \
-  -e PROXMOX_URL=https://192.168.1.100:8006 \
+  -e PROXMOX_URL=https://your-ip:8006 \
   -e PROXMOX_USER=root@pam \
   -e PROXMOX_TOKEN_ID=mcp \
-  -e PROXMOX_TOKEN_SECRET=xxx \
+  -e PROXMOX_TOKEN_SECRET=your-secret \
   oliviermj/mcp_proxmox:latest
 ```
 

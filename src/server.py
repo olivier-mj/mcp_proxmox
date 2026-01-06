@@ -570,5 +570,70 @@ def migrate_machine(vmid: int, node: str, type: Literal['qemu', 'lxc'], target_n
         logger.error(f"Error in migrate_machine: {e}")
         return f"Erreur lors de la migration : {e}"
 
+@mcp.tool()
+def delete_snapshot(vmid: int, node: str, type: Literal['qemu', 'lxc'], snapname: str):
+    """
+    Deletes a specific snapshot to free up storage space.
+    
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+        snapname (str): Name of the snapshot to delete.
+    """
+    logger.info(f"Tool called: delete_snapshot(vmid={vmid}, snapname={snapname})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.delete_snapshot(node, vmid, type, snapname)
+        return f"Suppression du snapshot '{snapname}' lancée pour la machine {vmid}."
+    except Exception as e:
+        logger.error(f"Error in delete_snapshot: {e}")
+        return f"Erreur lors de la suppression du snapshot : {e}"
+
+@mcp.tool()
+def unlock_machine(vmid: int, node: str):
+    """
+    Unlocks a machine if it is stuck in a 'locked' state (e.g., after a failed backup).
+    
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+    """
+    logger.info(f"Tool called: unlock_machine(vmid={vmid}, node={node})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.unlock_machine(node, vmid)
+        return f"Commande de déverrouillage envoyée pour la machine {vmid}."
+    except Exception as e:
+        logger.error(f"Error in unlock_machine: {e}")
+        return f"Erreur lors du déverrouillage : {e}"
+
+@mcp.tool()
+def get_cluster_logs(max_lines: int = 20):
+    """
+    Retrieves the latest global cluster logs to diagnose issues.
+    
+    Args:
+        max_lines (int): Number of log lines to retrieve (default: 20).
+    """
+    logger.info(f"Tool called: get_cluster_logs(limit={max_lines})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        logs = proxmox.get_cluster_log(max_lines)
+        if not logs: return "Aucun log trouvé."
+        
+        result = f"Derniers logs du cluster ({len(logs)}) :\n"
+        for l in logs:
+            # Proxmox logs have fields like 't' (text), 'u' (user), 'time', 'node'
+            time_str = l.get('time', '')
+            node = l.get('node', '?')
+            user = l.get('user', '?')
+            msg = l.get('msg', l.get('t', ''))
+            result += f"[{time_str}] ({node}) {user}: {msg}\n"
+        return result
+    except Exception as e:
+        logger.error(f"Error in get_cluster_logs: {e}")
+        return f"Erreur lors de la récupération des logs : {e}"
+
 if __name__ == "__main__":
     mcp.run()

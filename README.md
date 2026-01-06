@@ -30,7 +30,7 @@ This MCP (Model Context Protocol) server allows LLMs (like Claude, Gemini, etc.)
 | `list_infrastructure` | Shows node status (CPU, RAM, Online/Offline). |
 | `list_machines` | Lists VMs and Containers (Filters: name, status, type). |
 | `get_machine_config` | Shows detailed config (Cores, Memory, Disks). |
-| `list_storage` | Shows storage usage (Used/Free). |
+| `list_storage` | Shows usage & capabilities (Filter: `content_filter`). |
 | `get_vm_agent_network` | Retrieves internal IPs via QEMU Agent. |
 | `get_cluster_logs` | Shows global cluster error logs. |
 | `get_machine_performance_history` | Retrieves RRD history (CPU/RAM trends). |

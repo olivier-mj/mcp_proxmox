@@ -96,14 +96,17 @@ def list_machines(name_filter: Optional[str] = None, status_filter: Optional[Lit
         return f"Erreur lors de la récupération des machines : {e}"
 
 @mcp.tool()
-def list_storage():
+def list_storage(content_filter: Optional[str] = None):
     """
     Displays the storage status for all nodes.
 
+    Args:
+        content_filter (str, optional): Filter by content type (e.g., 'iso', 'backup', 'images').
+    
     Returns:
-        str: A formatted string showing used/total space for each storage.
+        str: A formatted string showing used/total space and capabilities for each storage.
     """
-    logger.info("Tool called: list_storage")
+    logger.info(f"Tool called: list_storage(filter={content_filter})")
     if not proxmox: return "Client Proxmox non configuré."
     try:
         nodes = proxmox.get_nodes()
@@ -117,11 +120,23 @@ def list_storage():
             result += f"\nNœud: {node_name}\n"
             try:
                 storages = proxmox.get_storage_status(node_name)
+                found_on_node = False
                 for s in storages:
                     if s.get('active'):
+                        content = s.get('content', '')
+                        
+                        # Application du filtre
+                        if content_filter and content_filter.lower() not in content.lower():
+                            continue
+                            
+                        found_on_node = True
                         used = (s.get('used', 0) / s.get('total', 1)) * 100
                         free_gb = s.get('avail', 0) / (1024**3)
-                        result += f"  - {s['storage']} ({s['type']}) : {used:.1f}% utilisé ({free_gb:.1f} GB libres)\n"
+                        shared = " (Partagé)" if s.get('shared') else ""
+                        result += f"  - {s['storage']} ({s['type']}){shared} : {used:.1f}% utilisé ({free_gb:.1f} GB libres) | Contenu: {content}\n"
+                
+                if not found_on_node and content_filter:
+                    result += f"  - Aucun stockage avec le contenu '{content_filter}' trouvé sur ce nœud.\n"
             except Exception as e:
                 logger.warning(f"Impossible de lire le stockage sur {node_name}: {e}")
                 result += f"  - Erreur de lecture stockage: {e}\n"

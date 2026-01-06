@@ -16,10 +16,65 @@ A Python-based Model Context Protocol (MCP) server to manage and monitor your Pr
     *   **Provisioning**: Clone machines (Templates) to new VMs/CTs.
     *   **Snapshots**: List, create, and restore snapshots.
     *   **Backups**: List and create full backups (vzdump).
+    *   **Orchestration**: Migrate machines live or offline between nodes.
+    *   **Analytics**: View historical performance (RRD Data).
+    *   **DevOps**: Cloud-Init configuration, resource resizing, and ISO/LXC template management.
 *   **Security**:
     *   Authentication via API Token (recommended).
     *   **No deletion**: Deleting machines is disabled for safety.
     *   Isolated execution via Docker.
+    *   **Firewall Management**: Audit and manage rules per machine.
+
+## 🛠️ Tool Reference
+
+### 📊 Monitoring & Diagnostics
+| Tool | Description |
+|---|---|
+| `list_infrastructure` | Shows node status (CPU, RAM, Online/Offline). |
+| `list_machines` | Lists VMs and Containers (Filters: name, status, type). |
+| `get_machine_config` | Shows detailed config (Cores, Memory, Disks). |
+| `list_storage` | Shows storage usage (Used/Free). |
+| `get_vm_agent_network` | Retrieves internal IPs via QEMU Agent. |
+| `get_cluster_logs` | Shows global cluster error logs. |
+| `get_machine_performance_history` | Retrieves RRD history (CPU/RAM trends). |
+
+### ⚡ Control & Actions
+| Tool | Description |
+|---|---|
+| `start_machine` | Starts a VM or Container. |
+| `stop_machine` | Stops (Graceful Shutdown or Forced Stop) a machine. |
+| `reboot_machine` | Reboots a machine. |
+| `get_console_url` | Generates a direct link to the NoVNC console. |
+| `resize_resources` | Adjusts CPU or RAM (Hotplug if supported). |
+| `unlock_machine` | Unlocks a machine (removes lock file). |
+| `set_machine_tags` | Sets tags (e.g., "prod,db"). |
+
+### 🏗️ Provisioning & DevOps
+| Tool | Description |
+|---|---|
+| `clone_machine` | Clones a machine (Template) to a new ID. |
+| `set_cloudinit_config` | Configures User, Password, SSH, IP via Cloud-Init. |
+| `list_isos` | Lists available ISO files. |
+| `download_iso` | Downloads an ISO from a URL. |
+| `list_available_lxc_templates` | Lists system templates (Alpine, Ubuntu...). |
+| `download_lxc_template` | Downloads an LXC template. |
+
+### 🛡️ Security & Protection
+| Tool | Description |
+|---|---|
+| `list_snapshots` | Lists restore points. |
+| `create_snapshot` | Creates an instant snapshot. |
+| `rollback_snapshot` | Restores a snapshot. |
+| `delete_snapshot` | Deletes a snapshot to free space. |
+| `list_backups` | Lists full backups (vzdump). |
+| `create_backup` | Starts a full backup. |
+| `list_firewall_rules` | Lists firewall rules. |
+| `add_firewall_rule` | Adds a rule (ACCEPT/DROP) to the firewall. |
+
+### 🏗️ Orchestration (Cluster)
+| Tool | Description |
+|---|---|
+| `migrate_machine` | Moves a machine to another node (Live/Offline). |
 
 ## Proxmox Preparation (API Token Creation)
 

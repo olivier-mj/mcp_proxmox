@@ -37,7 +37,7 @@ Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller vot
 | `list_infrastructure` | Affiche l'état des nœuds (CPU, RAM, Statut). |
 | `list_machines` | Liste les VMs et Containers (Filtres: nom, statut, type). |
 | `get_machine_config` | Affiche la config détaillée (Cœurs, Mémoire, Disques). |
-| `list_storage` | Affiche l'espace libre/utilisé des stockages. |
+| `list_storage` | Affiche l'espace et les contenus (Filtre: `content_filter`). |
 | `get_vm_agent_network` | Récupère les IPs internes via l'Agent QEMU. |
 | `get_cluster_logs` | Affiche les logs d'erreurs globaux du cluster. |
 | `get_machine_performance_history` | Affiche l'historique RRD (CPU/RAM) sur une période. |

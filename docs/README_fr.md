@@ -39,8 +39,8 @@ Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller vot
 | `get_machine_config` | Affiche la config détaillée (Cœurs, Mémoire, Disques). |
 | `list_storage` | Affiche l'espace libre/utilisé des stockages. |
 | `get_vm_agent_network` | Récupère les IPs internes via l'Agent QEMU. |
-| `get_cluster_logs` | (V6) Affiche les logs d'erreurs globaux du cluster. |
-| `get_machine_performance_history` | (V7) Affiche l'historique RRD (CPU/RAM) sur une période. |
+| `get_cluster_logs` | Affiche les logs d'erreurs globaux du cluster. |
+| `get_machine_performance_history` | Affiche l'historique RRD (CPU/RAM) sur une période. |
 
 ### ⚡ Pilotage & Actions
 | Outil | Description |
@@ -49,19 +49,19 @@ Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller vot
 | `stop_machine` | Arrête (Shutdown propre ou Stop forcé) une machine. |
 | `reboot_machine` | Redémarre une machine. |
 | `get_console_url` | Génère un lien direct vers la console NoVNC. |
-| `resize_resources` | (V4) Modifie le CPU ou la RAM (Hotplug si supporté). |
-| `unlock_machine` | (V6) Débloque une machine figée (lock). |
-| `set_machine_tags` | (V7) Applique des étiquettes (ex: "prod,db"). |
+| `resize_resources` | Modifie le CPU ou la RAM (Hotplug si supporté). |
+| `unlock_machine` | Débloque une machine figée (lock). |
+| `set_machine_tags` | Applique des étiquettes (ex: "prod,db"). |
 
 ### 🏗️ Provisioning & DevOps
 | Outil | Description |
 |---|---|
 | `clone_machine` | Clone une machine (Template) vers une nouvelle ID. |
-| `set_cloudinit_config` | (V4) Configure User, Password, SSH, IP via Cloud-Init. |
+| `set_cloudinit_config` | Configure User, Password, SSH, IP via Cloud-Init. |
 | `list_isos` | Liste les fichiers ISO disponibles. |
-| `download_iso` | (V4) Télécharge un ISO depuis une URL. |
-| `list_available_lxc_templates` | (V7) Liste les templates système (Alpine, Ubuntu...). |
-| `download_lxc_template` | (V7) Télécharge un template LXC. |
+| `download_iso` | Télécharge un ISO depuis une URL. |
+| `list_available_lxc_templates` | Liste les templates système (Alpine, Ubuntu...). |
+| `download_lxc_template` | Télécharge un template LXC. |
 
 ### 🛡️ Sécurité & Protection
 | Outil | Description |
@@ -69,16 +69,16 @@ Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller vot
 | `list_snapshots` | Liste les points de restauration. |
 | `create_snapshot` | Crée un snapshot instantané. |
 | `rollback_snapshot` | Revient à un état précédent. |
-| `delete_snapshot` | (V6) Supprime un snapshot pour libérer de l'espace. |
+| `delete_snapshot` | Supprime un snapshot pour libérer de l'espace. |
 | `list_backups` | Liste les sauvegardes complètes (vzdump). |
 | `create_backup` | Lance une sauvegarde complète. |
-| `list_firewall_rules` | (V5) Affiche les règles de pare-feu. |
-| `add_firewall_rule` | (V5) Ajoute une règle (ACCEPT/DROP) au pare-feu. |
+| `list_firewall_rules` | Affiche les règles de pare-feu. |
+| `add_firewall_rule` | Ajoute une règle (ACCEPT/DROP) au pare-feu. |
 
 ### 🏗️ Orchestration (Cluster)
 | Outil | Description |
 |---|---|
-| `migrate_machine` | (V5) Déplace une machine vers un autre nœud (Live/Offline). |
+| `migrate_machine` | Déplace une machine vers un autre nœud (Live/Offline). |
 
 ## Préparation de Proxmox (Création du Token)
 

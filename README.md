@@ -32,8 +32,8 @@ This MCP (Model Context Protocol) server allows LLMs (like Claude, Gemini, etc.)
 | `get_machine_config` | Shows detailed config (Cores, Memory, Disks). |
 | `list_storage` | Shows storage usage (Used/Free). |
 | `get_vm_agent_network` | Retrieves internal IPs via QEMU Agent. |
-| `get_cluster_logs` | (V6) Shows global cluster error logs. |
-| `get_machine_performance_history` | (V7) Retrieves RRD history (CPU/RAM trends). |
+| `get_cluster_logs` | Shows global cluster error logs. |
+| `get_machine_performance_history` | Retrieves RRD history (CPU/RAM trends). |
 
 ### ⚡ Control & Actions
 | Tool | Description |
@@ -42,19 +42,19 @@ This MCP (Model Context Protocol) server allows LLMs (like Claude, Gemini, etc.)
 | `stop_machine` | Stops (Graceful Shutdown or Forced Stop) a machine. |
 | `reboot_machine` | Reboots a machine. |
 | `get_console_url` | Generates a direct link to the NoVNC console. |
-| `resize_resources` | (V4) Adjusts CPU or RAM (Hotplug if supported). |
-| `unlock_machine` | (V6) Unlocks a machine (removes lock file). |
-| `set_machine_tags` | (V7) Sets tags (e.g., "prod,db"). |
+| `resize_resources` | Adjusts CPU or RAM (Hotplug if supported). |
+| `unlock_machine` | Unlocks a machine (removes lock file). |
+| `set_machine_tags` | Sets tags (e.g., "prod,db"). |
 
 ### 🏗️ Provisioning & DevOps
 | Tool | Description |
 |---|---|
 | `clone_machine` | Clones a machine (Template) to a new ID. |
-| `set_cloudinit_config` | (V4) Configures User, Password, SSH, IP via Cloud-Init. |
+| `set_cloudinit_config` | Configures User, Password, SSH, IP via Cloud-Init. |
 | `list_isos` | Lists available ISO files. |
-| `download_iso` | (V4) Downloads an ISO from a URL. |
-| `list_available_lxc_templates` | (V7) Lists system templates (Alpine, Ubuntu...). |
-| `download_lxc_template` | (V7) Downloads an LXC template. |
+| `download_iso` | Downloads an ISO from a URL. |
+| `list_available_lxc_templates` | Lists system templates (Alpine, Ubuntu...). |
+| `download_lxc_template` | Downloads an LXC template. |
 
 ### 🛡️ Security & Protection
 | Tool | Description |
@@ -62,16 +62,16 @@ This MCP (Model Context Protocol) server allows LLMs (like Claude, Gemini, etc.)
 | `list_snapshots` | Lists restore points. |
 | `create_snapshot` | Creates an instant snapshot. |
 | `rollback_snapshot` | Restores a snapshot. |
-| `delete_snapshot` | (V6) Deletes a snapshot to free space. |
+| `delete_snapshot` | Deletes a snapshot to free space. |
 | `list_backups` | Lists full backups (vzdump). |
 | `create_backup` | Starts a full backup. |
-| `list_firewall_rules` | (V5) Lists firewall rules. |
-| `add_firewall_rule` | (V5) Adds a rule (ACCEPT/DROP) to the firewall. |
+| `list_firewall_rules` | Lists firewall rules. |
+| `add_firewall_rule` | Adds a rule (ACCEPT/DROP) to the firewall. |
 
 ### 🏗️ Orchestration (Cluster)
 | Tool | Description |
 |---|---|
-| `migrate_machine` | (V5) Moves a machine to another node (Live/Offline). |
+| `migrate_machine` | Moves a machine to another node (Live/Offline). |
 
 ## 📚 Documentation
 

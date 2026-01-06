@@ -40,6 +40,33 @@ L'objectif de la V3 est de passer de la gestion passive au déploiement actif et
 
 ---
 
+# ✅ V4 : DevOps & Personnalisation (Terminé)
+
+L'objectif de la V4 est de permettre une configuration fine des machines après clonage et de gérer les ressources dynamiquement.
+
+## 1. ☁️ Support Cloud-Init
+- [x] Ajouter `set_cloudinit_config` dans `src/client.py` (User, Password, SSH Keys, IP).
+- [x] Exposer l'outil MCP correspondant.
+- [x] Test de validation validé.
+
+## 2. ⚡ Redimensionnement (Hotplug)
+- [x] Ajouter `resize_resources(vmid, cpu, memory)` dans `src/client.py`.
+- [x] Exposer l'outil MCP pour ajuster CPU/RAM à chaud (si OS compatible) ou à froid.
+- [x] *But :* Adapter les ressources selon la charge observée.
+
+## 3. 💿 Gestion des ISOs
+- [x] Ajouter `download_iso(url, storage, filename)` dans `src/client.py`.
+- [x] Outil : `list_isos(storage)`.
+- [x] *But :* Rendre l'IA autonome pour récupérer de nouveaux OS.
+
+---
+
 ## Statut Actuel
-- **Branche :** `dev` -> Prêt à être mergé dans `main` (V3 Release).
-- **État :** V3 Complète.
+- **Branche :** `dev` -> Prêt pour Release V4.
+- **État :** V4 Complète.
+
+---
+
+## Statut Actuel
+- **Branche :** `dev`
+- **État :** V3 Complète / V4 en préparation.

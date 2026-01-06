@@ -77,21 +77,24 @@ L'objectif de la V5 est de donner à l'IA les moyens de protéger le réseau et 
 
 ---
 
-# 🧹 V6 : Maintenance & Nettoyage (Futur)
+# ✅ V6 : Maintenance & Nettoyage (Terminé)
 
 L'objectif de la V6 est d'automatiser les tâches de "Janitor" (nettoyage) et de résolution d'incidents mineurs.
 
 ## 1. ♻️ Gestion des Snapshots (Suppression)
-- [ ] Ajouter `delete_snapshot(vmid, snapname)`.
-- [ ] *But :* Supprimer les vieux snapshots pour libérer de l'espace stockage.
+- [x] Ajouter `delete_snapshot(vmid, snapname)`.
+- [x] Exposer l'outil MCP correspondant.
+- [x] Test de validation validé.
 
 ## 2. 🚑 Réparation (Unlock)
-- [ ] Ajouter `unlock_machine(vmid)`.
-- [ ] *But :* Débloquer une VM figée par un backup échoué (erreur "VM is locked").
+- [x] Ajouter `unlock_machine(vmid)`.
+- [x] Exposer l'outil MCP correspondant.
+- [x] Test de validation validé.
 
 ## 3. 📜 Logs Cluster
-- [ ] Ajouter `get_cluster_log(max_lines)`.
-- [ ] *But :* Analyser les erreurs globales du datacenter.
+- [x] Ajouter `get_cluster_log(max_lines)`.
+- [x] Exposer l'outil MCP `get_cluster_logs`.
+- [x] Test de validation validé.
 
 ---
 
@@ -114,5 +117,5 @@ L'objectif de la V7 est de donner à l'IA une vision historique (performances) e
 ---
 
 ## Statut Actuel
-- **Branche :** `feature/v4-devops` (Contient V4 + V5).
-- **Prochaine étape :** Release V5 -> Début V6.
+- **Branche :** `feature/v6-maintenance` (Contient V4 + V5 + V6).
+- **Prochaine étape :** Release V6 -> Début V7.

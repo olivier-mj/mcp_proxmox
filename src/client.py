@@ -386,3 +386,25 @@ class ProxmoxClient:
             return self.api.nodes(node).lxc(vmid).migrate.post(**params)
         else:
             raise ValueError("machine_type doit être 'qemu' ou 'lxc'")
+
+    def delete_snapshot(self, node, vmid, machine_type, snapname):
+        """Deletes a specific snapshot."""
+        if machine_type == 'qemu':
+            return self.api.nodes(node).qemu(vmid).snapshot(snapname).delete()
+        return self.api.nodes(node).lxc(vmid).snapshot(snapname).delete()
+
+    def unlock_machine(self, node, vmid):
+        """
+        Unlocks a VM/Container by removing the 'lock' property from its config.
+        Useful when a task (like backup) fails and leaves the machine locked.
+        """
+        # Try QEMU first
+        try:
+            return self.api.nodes(node).qemu(vmid).config.post(delete='lock')
+        except:
+            # If not QEMU, try LXC
+            return self.api.nodes(node).lxc(vmid).config.post(delete='lock')
+
+    def get_cluster_log(self, max_lines=50):
+        """Retrieves global cluster logs."""
+        return self.api.cluster.log.get(limit=max_lines)

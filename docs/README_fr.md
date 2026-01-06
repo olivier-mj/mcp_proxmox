@@ -14,8 +14,11 @@ Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller vot
     *   Démarrer, Arrêter, Redémarrer.
     *   **Console** : Génération de liens directs vers la console NoVNC.
     *   **Provisioning** : Clonage de machines (Templates) vers de nouvelles VMs/CTs.
+    *   **Configuration DevOps (Cloud-Init)** : Configuration post-déploiement (User, Password, SSH, IP).
+    *   **ISOs** : Téléchargement d'ISOs depuis une URL et listage des images disponibles.
     *   **Snapshots** : Liste, création et restauration de snapshots.
     *   **Backups** : Liste et création de sauvegardes complètes (vzdump).
+    *   **Ressources (Hotplug)** : Ajustement dynamique des CPU et de la RAM (VM & LXC).
 *   **Sécurité** :
     *   Authentification via API Token (recommandé).
     *   Aucune suppression de machine possible.

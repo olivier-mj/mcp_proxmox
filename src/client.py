@@ -256,3 +256,87 @@ class ProxmoxClient:
         # Proxmox Web UI console URL format
         # Note: The user must be logged into the Web UI for this link to work immediately.
         return f"{base_url}/#v1:0:18:4:::::::{node}:{vmid}:novnc"
+
+    def set_cloudinit_config(self, node, vmid, ciuser=None, cipassword=None, sshkeys=None, ipconfig0=None):
+        """
+        Sets Cloud-Init configuration for a VM.
+
+        Args:
+            node (str): Node name.
+            vmid (int): VM ID.
+            ciuser (str, optional): Cloud-Init user.
+            cipassword (str, optional): Cloud-Init password.
+            sshkeys (str, optional): Public SSH keys.
+            ipconfig0 (str, optional): IP configuration (e.g., 'ip=dhcp' or 'ip=192.168.1.10/24,gw=192.168.1.1').
+        
+        Returns:
+            str: Task ID.
+        """
+        params = {}
+        if ciuser: params['ciuser'] = ciuser
+        if cipassword: params['cipassword'] = cipassword
+        if sshkeys: params['sshkeys'] = sshkeys
+        if ipconfig0: params['ipconfig0'] = ipconfig0
+        
+        if not params:
+            raise ValueError("Au moins un paramètre Cloud-Init doit être fourni.")
+
+        return self.api.nodes(node).qemu(vmid).config.post(**params)
+
+    def resize_machine_resources(self, node, vmid, machine_type, cores=None, memory=None):
+        """
+        Resizes CPU cores and RAM for a VM or Container.
+        Note: RAM for VMs is in MB.
+
+        Args:
+            node (str): Node name.
+            vmid (int): Machine ID.
+            machine_type (str): 'qemu' or 'lxc'.
+            cores (int, optional): Number of CPU cores.
+            memory (int, optional): RAM in MB.
+        """
+        params = {}
+        if cores: params['cores'] = cores
+        if memory: params['memory'] = memory
+        
+        if not params:
+            raise ValueError("Au moins un paramètre (cores ou memory) doit être fourni.")
+
+        if machine_type == 'qemu':
+            return self.api.nodes(node).qemu(vmid).config.post(**params)
+        return self.api.nodes(node).lxc(vmid).config.post(**params)
+
+    def list_isos(self, node, storage):
+        """
+        Lists ISO files available on a specific storage.
+
+        Args:
+            node (str): Node name.
+            storage (str): Storage name (e.g., 'local', 'nas').
+        
+        Returns:
+            list: List of ISO files.
+        """
+        return self.api.nodes(node).storage(storage).content.get(content='iso')
+
+    def download_iso(self, node, storage, url, filename):
+        """
+        Downloads an ISO file from a URL to a specific storage.
+
+        Args:
+            node (str): Node name.
+            storage (str): Storage name.
+            url (str): URL of the ISO file.
+            filename (str): Target filename (must end with .iso).
+
+        Returns:
+            str: Task ID.
+        """
+        if not filename.endswith('.iso'):
+            raise ValueError("Le nom du fichier doit se terminer par .iso")
+            
+        return self.api.nodes(node).storage(storage).download_url.post(
+            content='iso',
+            filename=filename,
+            url=url
+        )

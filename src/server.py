@@ -406,5 +406,95 @@ def get_console_url(vmid: int, node: str, type: Literal['qemu', 'lxc']):
         logger.error(f"Error in get_console_url: {e}")
         return f"Erreur lors de la génération du lien : {e}"
 
+@mcp.tool()
+def set_cloudinit_config(vmid: int, node: str, user: str = None, password: str = None, ssh_keys: str = None, ip_config: str = "ip=dhcp"):
+    """
+    Configures Cloud-Init parameters for a VM.
+    
+    Args:
+        vmid (int): VM ID.
+        node (str): Node name.
+        user (str, optional): Cloud-Init username.
+        password (str, optional): Cloud-Init password.
+        ssh_keys (str, optional): Public SSH key(s).
+        ip_config (str, optional): Network config (default: 'ip=dhcp'). Example static: 'ip=192.168.1.50/24,gw=192.168.1.1'
+    """
+    logger.info(f"Tool called: set_cloudinit_config(vmid={vmid}, node={node})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.set_cloudinit_config(node, vmid, user, password, ssh_keys, ip_config)
+        return f"Configuration Cloud-Init appliquée pour la machine {vmid}. (Redémarrage nécessaire pour prise en compte)"
+    except Exception as e:
+        logger.error(f"Error in set_cloudinit_config: {e}")
+        return f"Erreur lors de la configuration Cloud-Init : {e}"
+
+@mcp.tool()
+def resize_resources(vmid: int, node: str, type: Literal['qemu', 'lxc'], cores: Optional[int] = None, memory_mb: Optional[int] = None):
+    """
+    Adjusts the number of CPU cores and/or RAM of a machine.
+    
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+        cores (int, optional): New number of CPU cores.
+        memory_mb (int, optional): New RAM size in MB (e.g., 2048 for 2GB).
+    """
+    logger.info(f"Tool called: resize_resources(vmid={vmid}, node={node}, cores={cores}, mem={memory_mb})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.resize_machine_resources(node, vmid, type, cores, memory_mb)
+        changes = []
+        if cores: changes.append(f"{cores} cœurs")
+        if memory_mb: changes.append(f"{memory_mb} MB RAM")
+        return f"Ressources mises à jour pour la machine {vmid} : {', '.join(changes)}."
+    except Exception as e:
+        logger.error(f"Error in resize_resources: {e}")
+        return f"Erreur lors du redimensionnement : {e}"
+
+@mcp.tool()
+def list_isos(node: str, storage: str):
+    """
+    Lists available ISO files on a storage.
+    
+    Args:
+        node (str): Node name.
+        storage (str): Storage ID (e.g., 'local').
+    """
+    logger.info(f"Tool called: list_isos(node={node}, storage={storage})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        isos = proxmox.list_isos(node, storage)
+        if not isos: return f"Aucun ISO trouvé sur {storage}."
+        
+        result = f"ISOs disponibles sur {storage} ({len(isos)}) :\n"
+        for iso in isos:
+            size_gb = iso.get('size', 0) / (1024**3)
+            result += f"  - {iso['volid']} ({size_gb:.2f} GB)\n"
+        return result
+    except Exception as e:
+        logger.error(f"Error in list_isos: {e}")
+        return f"Erreur lors de la récupération des ISOs : {e}"
+
+@mcp.tool()
+def download_iso(node: str, storage: str, url: str, filename: str):
+    """
+    Downloads an ISO file from a URL directly to Proxmox storage.
+    
+    Args:
+        node (str): Node name.
+        storage (str): Storage ID (e.g., 'local').
+        url (str): Direct link to the ISO file.
+        filename (str): Name of the file on disk (must end with .iso).
+    """
+    logger.info(f"Tool called: download_iso(node={node}, storage={storage}, url={url})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.download_iso(node, storage, url, filename)
+        return f"Téléchargement de '{filename}' lancé depuis {url} vers {storage}."
+    except Exception as e:
+        logger.error(f"Error in download_iso: {e}")
+        return f"Erreur lors du téléchargement : {e}"
+
 if __name__ == "__main__":
     mcp.run()

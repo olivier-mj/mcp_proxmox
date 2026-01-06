@@ -61,12 +61,58 @@ L'objectif de la V4 est de permettre une configuration fine des machines après 
 
 ---
 
-## Statut Actuel
-- **Branche :** `dev` -> Prêt pour Release V4.
-- **État :** V4 Complète.
+# ✅ V5 : Sécurité & Orchestration (Terminé)
+
+L'objectif de la V5 est de donner à l'IA les moyens de protéger le réseau et d'équilibrer la charge du cluster.
+
+## 1. 🔥 Gestion du Firewall
+- [x] Ajouter `get_firewall_rules(vmid)` et `add_firewall_rule(...)` dans `src/client.py`.
+- [x] Exposer les outils MCP correspondants.
+- [x] Test de validation validé.
+
+## 2. 🏗️ Migration (HA)
+- [x] Ajouter `migrate_machine(vmid, target_node, online)` dans `src/client.py`.
+- [x] Exposer l'outil MCP.
+- [x] Test de validation validé.
+
+---
+
+# 🧹 V6 : Maintenance & Nettoyage (Futur)
+
+L'objectif de la V6 est d'automatiser les tâches de "Janitor" (nettoyage) et de résolution d'incidents mineurs.
+
+## 1. ♻️ Gestion des Snapshots (Suppression)
+- [ ] Ajouter `delete_snapshot(vmid, snapname)`.
+- [ ] *But :* Supprimer les vieux snapshots pour libérer de l'espace stockage.
+
+## 2. 🚑 Réparation (Unlock)
+- [ ] Ajouter `unlock_machine(vmid)`.
+- [ ] *But :* Débloquer une VM figée par un backup échoué (erreur "VM is locked").
+
+## 3. 📜 Logs Cluster
+- [ ] Ajouter `get_cluster_log(max_lines)`.
+- [ ] *But :* Analyser les erreurs globales du datacenter.
+
+---
+
+# 📈 V7 : Analyste & Libraire (Futur)
+
+L'objectif de la V7 est de donner à l'IA une vision historique (performances) et une autonomie complète sur les conteneurs LXC.
+
+## 1. 📊 Données Historiques (RRD)
+- [ ] Ajouter `get_machine_performance_history(vmid, timeframe)`.
+- [ ] *But :* Analyser les tendances (CPU/RAM) pour diagnostiquer des crashs passés.
+
+## 2. 📦 Gestion des Templates LXC
+- [ ] Ajouter `list_lxc_templates()` et `download_lxc_template()`.
+- [ ] *But :* Permettre le déploiement instantané de conteneurs légers (Alpine, Debian, Apps TurnKey).
+
+## 3. 🏷️ Gestion des Tags
+- [ ] Ajouter `set_machine_tags(vmid, tags)`.
+- [ ] *But :* Organiser le parc (ex: "prod", "test", "webserver") pour faciliter les recherches de l'IA.
 
 ---
 
 ## Statut Actuel
-- **Branche :** `dev`
-- **État :** V3 Complète / V4 en préparation.
+- **Branche :** `feature/v4-devops` (Contient V4 + V5).
+- **Prochaine étape :** Release V5 -> Début V6.

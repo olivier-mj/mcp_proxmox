@@ -340,3 +340,49 @@ class ProxmoxClient:
             filename=filename,
             url=url
         )
+
+    def get_firewall_rules(self, node, vmid, machine_type):
+        """Lists firewall rules for a VM or LXC container."""
+        if machine_type == 'qemu':
+            return self.api.nodes(node).qemu(vmid).firewall.rules.get()
+        return self.api.nodes(node).lxc(vmid).firewall.rules.get()
+
+    def add_firewall_rule(self, node, vmid, machine_type, action, rule_type, proto=None, dport=None, sport=None, source=None, dest=None, enable=1):
+        """Adds a new firewall rule to a VM or LXC container."""
+        params = {
+            'action': action,
+            'type': rule_type,
+            'enable': enable
+        }
+        if proto: params['proto'] = proto
+        if dport: params['dport'] = dport
+        if sport: params['sport'] = sport
+        if source: params['source'] = source
+        if dest: params['dest'] = dest
+
+        if machine_type == 'qemu':
+            return self.api.nodes(node).qemu(vmid).firewall.rules.post(**params)
+        return self.api.nodes(node).lxc(vmid).firewall.rules.post(**params)
+
+    def migrate_machine(self, node, vmid, machine_type, target_node, online=False):
+        """
+        Migrates a machine to another node.
+
+        Args:
+            node (str): Source node.
+            vmid (int): Machine ID.
+            machine_type (str): 'qemu' or 'lxc'.
+            target_node (str): Destination node.
+            online (bool): If True, perform online migration (no downtime).
+        """
+        params = {'target': target_node}
+        if online:
+            params['online'] = 1
+            params['with-local-disks'] = 1 # Often needed for online migration if local storage is used
+
+        if machine_type == 'qemu':
+            return self.api.nodes(node).qemu(vmid).migrate.post(**params)
+        elif machine_type == 'lxc':
+            return self.api.nodes(node).lxc(vmid).migrate.post(**params)
+        else:
+            raise ValueError("machine_type doit être 'qemu' ou 'lxc'")

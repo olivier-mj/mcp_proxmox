@@ -496,5 +496,79 @@ def download_iso(node: str, storage: str, url: str, filename: str):
         logger.error(f"Error in download_iso: {e}")
         return f"Erreur lors du téléchargement : {e}"
 
+@mcp.tool()
+def list_firewall_rules(vmid: int, node: str, type: Literal['qemu', 'lxc']):
+    """
+    Lists all firewall rules for a specific machine.
+    
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+    """
+    logger.info(f"Tool called: list_firewall_rules(vmid={vmid}, node={node})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        rules = proxmox.get_firewall_rules(node, vmid, type)
+        if not rules: return f"Aucune règle de pare-feu trouvée pour la machine {vmid}."
+        
+        result = f"Règles Firewall pour {vmid} ({type}) :\n"
+        for r in rules:
+            status = "ON" if r.get('enable') else "OFF"
+            action = r.get('action')
+            direction = r.get('type') # 'in' or 'out'
+            proto = r.get('proto', 'any')
+            dport = r.get('dport', 'any')
+            result += f"  - [{status}] {direction.upper()} {action} | Proto: {proto} | Port: {dport}\n"
+        return result
+    except Exception as e:
+        logger.error(f"Error in list_firewall_rules: {e}")
+        return f"Erreur lors de la récupération des règles : {e}"
+
+@mcp.tool()
+def add_firewall_rule(vmid: int, node: str, type: Literal['qemu', 'lxc'], action: Literal['ACCEPT', 'DROP', 'REJECT'], direction: Literal['in', 'out'], proto: Optional[str] = None, port: Optional[str] = None):
+    """
+    Adds a firewall rule to a machine.
+    
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+        action (str): 'ACCEPT', 'DROP' or 'REJECT'.
+        direction (str): 'in' for inbound or 'out' for outbound.
+        proto (str, optional): Protocol (e.g., 'tcp', 'udp', 'icmp').
+        port (str, optional): Destination port (e.g., '80', '22', '1000:2000').
+    """
+    logger.info(f"Tool called: add_firewall_rule(vmid={vmid}, action={action}, proto={proto})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.add_firewall_rule(node, vmid, type, action, direction, proto=proto, dport=port)
+        return f"Règle de pare-feu ({action} {direction} {proto or ''}) ajoutée avec succès pour la machine {vmid}."
+    except Exception as e:
+        logger.error(f"Error in add_firewall_rule: {e}")
+        return f"Erreur lors de l'ajout de la règle : {e}"
+
+@mcp.tool()
+def migrate_machine(vmid: int, node: str, type: Literal['qemu', 'lxc'], target_node: str, online: bool = False):
+    """
+    Migrates a machine to another node in the cluster.
+    
+    Args:
+        vmid (int): Machine ID.
+        node (str): Source node name.
+        type (str): 'qemu' or 'lxc'.
+        target_node (str): Destination node name.
+        online (bool): If True, attempts a live migration (no downtime).
+    """
+    logger.info(f"Tool called: migrate_machine(vmid={vmid}, from={node}, to={target_node}, online={online})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.migrate_machine(node, vmid, type, target_node, online)
+        mode = "à chaud (online)" if online else "à froid (offline)"
+        return f"Migration {mode} de la machine {vmid} vers le nœud {target_node} lancée."
+    except Exception as e:
+        logger.error(f"Error in migrate_machine: {e}")
+        return f"Erreur lors de la migration : {e}"
+
 if __name__ == "__main__":
     mcp.run()

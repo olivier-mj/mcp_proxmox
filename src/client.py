@@ -408,3 +408,46 @@ class ProxmoxClient:
     def get_cluster_log(self, max_lines=50):
         """Retrieves global cluster logs."""
         return self.api.cluster.log.get(limit=max_lines)
+
+    def get_machine_rrd_data(self, node, vmid, machine_type, timeframe="hour"):
+        """
+        Retrieves RRD (performance) data for a machine.
+        
+        Args:
+            node (str): Node name.
+            vmid (int): Machine ID.
+            machine_type (str): 'qemu' or 'lxc'.
+            timeframe (str): 'hour', 'day', 'week', 'month', 'year'.
+        """
+        if machine_type == 'qemu':
+            return self.api.nodes(node).qemu(vmid).rrddata.get(timeframe=timeframe)
+        return self.api.nodes(node).lxc(vmid).rrddata.get(timeframe=timeframe)
+
+    def list_lxc_templates(self, node):
+        """Lists available LXC templates (from Proxmox Appliance Manager)."""
+        return self.api.nodes(node).aplinfo.get()
+
+    def download_lxc_template(self, node, storage, template):
+        """
+        Downloads a specific LXC template to storage.
+        
+        Args:
+            node (str): Node name.
+            storage (str): Target storage (e.g., 'local').
+            template (str): Template name (e.g., 'ubuntu-20.04-standard_...').
+        """
+        return self.api.nodes(node).aplinfo.post(storage=storage, template=template)
+
+    def set_machine_tags(self, node, vmid, machine_type, tags):
+        """
+        Sets tags for a machine.
+        
+        Args:
+            node (str): Node name.
+            vmid (int): Machine ID.
+            machine_type (str): 'qemu' or 'lxc'.
+            tags (str): Comma separated list of tags (e.g., 'prod,linux').
+        """
+        if machine_type == 'qemu':
+            return self.api.nodes(node).qemu(vmid).config.post(tags=tags)
+        return self.api.nodes(node).lxc(vmid).config.post(tags=tags)

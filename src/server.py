@@ -635,5 +635,104 @@ def get_cluster_logs(max_lines: int = 20):
         logger.error(f"Error in get_cluster_logs: {e}")
         return f"Erreur lors de la récupération des logs : {e}"
 
+@mcp.tool()
+def get_machine_performance_history(vmid: int, node: str, type: Literal['qemu', 'lxc'], timeframe: Literal['hour', 'day', 'week'] = 'hour'):
+    """
+    Retrieves performance history (CPU, RAM) for a machine (RRD data).
+    Useful for diagnosing past issues.
+    
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+        timeframe (str): Period to analyze ('hour', 'day', 'week').
+    """
+    logger.info(f"Tool called: get_machine_performance_history(vmid={vmid}, time={timeframe})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        data = proxmox.get_machine_rrd_data(node, vmid, type, timeframe)
+        if not data: return "Aucune donnée historique disponible."
+        
+        # Summarize data to avoid token explosion
+        # Take 1 point every N points depending on total length
+        step = max(1, len(data) // 10) 
+        sampled = data[::step]
+        
+        result = f"Historique Performance (Résumé 10 points - {timeframe}) :\n"
+        for point in sampled:
+            # RRD data format might vary, but usually has 'time', 'cpu', 'mem', 'maxmem'
+            ts = point.get('time', 0)
+            cpu = point.get('cpu', 0) * 100 # Often 0-1 float
+            # Depending on Proxmox version, keys might differ (e.g. 'netin', 'netout')
+            result += f"  - Time: {ts} | CPU: {cpu:.1f}%\n"
+        return result
+    except Exception as e:
+        logger.error(f"Error in get_machine_performance_history: {e}")
+        return f"Erreur lors de la récupération de l'historique : {e}"
+
+@mcp.tool()
+def list_available_lxc_templates(node: str):
+    """
+    Lists LXC templates available for download (e.g., Ubuntu, Alpine, TurnKey).
+    """
+    logger.info(f"Tool called: list_available_lxc_templates(node={node})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        tmps = proxmox.list_lxc_templates(node)
+        if not tmps: return "Aucun template trouvé. (Essayez 'pveam update' sur le nœud si vide)."
+        
+        result = f"Templates LXC Disponibles ({len(tmps)}) :\n"
+        # Sort and limit to avoid huge output if many templates
+        for t in tmps[:20]: # Limit to top 20 for safety
+            name = t.get('template')
+            desc = t.get('headline', t.get('description', ''))[:50] # Truncate description
+            result += f"  - {name} : {desc}\n"
+        if len(tmps) > 20:
+            result += f"... et {len(tmps)-20} autres.\n"
+        return result
+    except Exception as e:
+        logger.error(f"Error in list_available_lxc_templates: {e}")
+        return f"Erreur lors du listage des templates : {e}"
+
+@mcp.tool()
+def download_lxc_template(node: str, storage: str, template_name: str):
+    """
+    Downloads a specific LXC template to storage.
+    
+    Args:
+        node (str): Node name.
+        storage (str): Storage ID (e.g., 'local').
+        template_name (str): Exact name of the template (from list_available_lxc_templates).
+    """
+    logger.info(f"Tool called: download_lxc_template(name={template_name})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.download_lxc_template(node, storage, template_name)
+        return f"Téléchargement du template '{template_name}' lancé vers {storage}."
+    except Exception as e:
+        logger.error(f"Error in download_lxc_template: {e}")
+        return f"Erreur lors du téléchargement : {e}"
+
+@mcp.tool()
+def set_machine_tags(vmid: int, node: str, type: Literal['qemu', 'lxc'], tags: str):
+    """
+    Sets tags for a machine to organize them (e.g., 'production,db').
+    Replaces existing tags.
+    
+    Args:
+        vmid (int): Machine ID.
+        node (str): Node name.
+        type (str): 'qemu' or 'lxc'.
+        tags (str): Comma-separated tags (e.g., 'dev,test').
+    """
+    logger.info(f"Tool called: set_machine_tags(vmid={vmid}, tags={tags})")
+    if not proxmox: return "Client Proxmox non configuré."
+    try:
+        proxmox.set_machine_tags(node, vmid, type, tags)
+        return f"Tags '{tags}' appliqués à la machine {vmid}."
+    except Exception as e:
+        logger.error(f"Error in set_machine_tags: {e}")
+        return f"Erreur lors de l'ajout des tags : {e}"
+
 if __name__ == "__main__":
     mcp.run()

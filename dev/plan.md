@@ -98,24 +98,27 @@ L'objectif de la V6 est d'automatiser les tâches de "Janitor" (nettoyage) et de
 
 ---
 
-# 📈 V7 : Analyste & Libraire (Futur)
+# ✅ V7 : Analyste & Libraire (Terminé)
 
 L'objectif de la V7 est de donner à l'IA une vision historique (performances) et une autonomie complète sur les conteneurs LXC.
 
 ## 1. 📊 Données Historiques (RRD)
-- [ ] Ajouter `get_machine_performance_history(vmid, timeframe)`.
-- [ ] *But :* Analyser les tendances (CPU/RAM) pour diagnostiquer des crashs passés.
+- [x] Ajouter `get_machine_performance_history(vmid, timeframe)`.
+- [x] Exposer l'outil MCP correspondant.
+- [x] Test de validation validé.
 
 ## 2. 📦 Gestion des Templates LXC
-- [ ] Ajouter `list_lxc_templates()` et `download_lxc_template()`.
-- [ ] *But :* Permettre le déploiement instantané de conteneurs légers (Alpine, Debian, Apps TurnKey).
+- [x] Ajouter `list_lxc_templates()` et `download_lxc_template()`.
+- [x] Exposer les outils MCP correspondants.
+- [x] Test de validation validé.
 
 ## 3. 🏷️ Gestion des Tags
-- [ ] Ajouter `set_machine_tags(vmid, tags)`.
-- [ ] *But :* Organiser le parc (ex: "prod", "test", "webserver") pour faciliter les recherches de l'IA.
+- [x] Ajouter `set_machine_tags(vmid, tags)`.
+- [x] Exposer l'outil MCP correspondant.
+- [x] Test de validation validé.
 
 ---
 
 ## Statut Actuel
-- **Branche :** `feature/v6-maintenance` (Contient V4 + V5 + V6).
-- **Prochaine étape :** Release V6 -> Début V7.
+- **Branche :** `feature/v7-analyst` (V7).
+- **Prochaine étape :** Release V7 -> Maintenance continue.

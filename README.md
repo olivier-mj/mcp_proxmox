@@ -12,6 +12,9 @@ This MCP (Model Context Protocol) server allows LLMs (like Claude, Gemini, etc.)
 - 📊 **Monitoring**: View nodes (CPU/RAM), VMs, containers (LXC), storage status, and internal IPs (via Agent).
 - ⚡ **Management**: Start, stop (graceful/forced), reboot, and **Clone** (Provisioning) machines.
 - 🏗️ **Orchestration**: **Migrate** machines (live or offline) between nodes in a cluster.
+- 📈 **Analytics**: View **Historical Performance** (CPU/RAM RRD data) for diagnostics.
+- 📚 **Library**: Manage **LXC Templates** and **ISOs** (Download/List).
+- 🏷️ **Organization**: Manage machine **Tags**.
 - 🛠️ **DevOps**: Configure **Cloud-Init** (User/SSH/IP), **Resize** resources (CPU/RAM Hotplug), and **Download ISOs**.
 - 🛡️ **Security**: Audit and manage **Firewall** rules per VM/Container.
 - 🛡️ **Protection**: Manage **Snapshots** and **Backups** directly via MCP.

@@ -17,6 +17,9 @@ Un serveur MCP (Model Context Protocol) en Python pour piloter et surveiller vot
     *   **Configuration DevOps (Cloud-Init)** : Configuration post-déploiement (User, Password, SSH, IP).
     *   **Orchestration (V5)** : Migration de machines à chaud (online) ou à froid entre nœuds.
     *   **Sécurité & Firewall** : Audit et gestion des règles de pare-feu par machine.
+    *   **Analyste (V7)** : Consultation de l'historique de performance (RRD Data - CPU/RAM).
+    *   **Libraire (V7)** : Gestion des Templates LXC (Listage & Téléchargement).
+    *   **Tags (V7)** : Organisation des machines par étiquettes.
     *   **ISOs** : Téléchargement d'ISOs depuis une URL et listage des images disponibles.
     *   **Snapshots** : Liste, création et restauration de snapshots.
     *   **Backups** : Liste et création de sauvegardes complètes (vzdump).

@@ -1,11 +1,12 @@
-# Utiliser une image Python légère
-FROM python:3.11-slim
+# Utiliser une image Python récente et sécurisée (Debian Bookworm)
+FROM python:3.12-slim-bookworm
 
 # Définir le répertoire de travail
 WORKDIR /app
 
-# Installer les dépendances système si nécessaire (ex: build-essential pour certains packages python)
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Mettre à jour les paquets système pour corriger les CVEs
+# Fix: apt-get upgrade aide à résoudre les vulnérabilités système connues
+RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
@@ -16,7 +17,10 @@ RUN useradd -m -u 1000 appuser
 COPY requirements.txt .
 
 # Installer les dépendances Python
-RUN pip install --no-cache-dir -r requirements.txt
+# Fix: upgrade pip résout la CVE-2025-8869 (MEDIUM)
+# Fix: urllib3 est mis à jour dans requirements.txt pour la CVE-2026-21441 (HIGH)
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
 # Copier le code source
 COPY src/ ./src/

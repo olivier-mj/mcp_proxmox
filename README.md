@@ -2,6 +2,8 @@
 
 [![Docker Image CI](https://github.com/olivier-mj/mcp_proxmox/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/olivier-mj/mcp_proxmox/actions/workflows/docker-publish.yml)
 
+[![MCP Badge](https://lobehub.com/badge/mcp/olivier-mj-mcp_proxmox)](https://lobehub.com/mcp/olivier-mj-mcp_proxmox)
+
 **Manage your Proxmox VE infrastructure using AI.**
 *Pilotez votre infrastructure Proxmox VE grâce à l'IA.*
 

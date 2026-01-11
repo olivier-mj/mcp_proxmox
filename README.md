@@ -20,6 +20,7 @@ This MCP (Model Context Protocol) server allows LLMs (like Claude, Gemini, etc.)
 - 🛠️ **DevOps**: Configure **Cloud-Init** (User/SSH/IP), **Resize** resources (CPU/RAM Hotplug), and **Download ISOs**.
 - 🛡️ **Security**: Audit and manage **Firewall** rules per VM/Container.
 - 🛡️ **Protection**: Manage **Snapshots** and **Backups** directly via MCP.
+- 🎨 **LobeChat Ready**: Compatible with LobeChat Plugins via a dedicated REST API.
 - 🔗 **Access**: Generate direct links to the **NoVNC Console**.
 - 🔒 **Secure**: Uses Proxmox API Tokens. **Machine deletion is disabled** for safety.
 - 🐳 **Docker-ready**: Works instantly with `docker run`.

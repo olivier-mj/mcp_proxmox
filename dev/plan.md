@@ -148,6 +148,24 @@ L'objectif de la V9 est de garder une trace persistante et détaillée de toutes
 
 ---
 
+# 🎨 V10 : Support LobeHub (Plugin) (Terminé)
+
+L'objectif de la V10 est de rendre le serveur compatible avec l'écosystème LobeChat en exposant une API REST conforme.
+
+## 1. 🌐 API REST (FastAPI)
+- [x] Créer `src/api.py` pour mapper les outils MCP vers des routes HTTP.
+- [x] Gérer les schémas Pydantic pour les requêtes/réponses.
+
+## 2. 🧩 Métadonnées Plugin
+- [x] Créer `.lobehub/manifest.json`.
+- [x] Générer `.lobehub/openapi.json`.
+
+## 3. 🐳 Déploiement
+- [x] Ajouter le service `lobe-plugin` dans `docker-compose.yml`.
+- [x] Exposer le port 8000 dans le `Dockerfile`.
+
+---
+
 ## Statut Actuel
-- **Branche :** `main`.
-- **Prochaine étape :** Implémentation V9 (Logs).
+- **Branche :** `feature/lobehub-plugin`.
+- **Prochaine étape :** Merge V10 -> Release Finale.

@@ -121,9 +121,17 @@ docker-compose up -d --build
 
 ## Intégrations
 
-### Utilisation de l'image Docker
+### LobeChat (LobeHub)
 
-Vous pouvez construire l'image localement (`docker build -t mcp-proxmox-image .`) ou utiliser l'image officielle publiée sur **Docker Hub** : `oliviermj/mcp_proxmox:latest`.
+Ce serveur est compatible avec LobeChat en tant que Plugin via son API REST.
+
+1.  Démarrez le plugin avec Docker :
+    ```bash
+    docker-compose up -d lobe-plugin
+    ```
+2.  Dans LobeChat, ajoutez un nouveau plugin personnalisé :
+    *   **Manifest URL** : `http://localhost:8000/openapi.json` (ou l'URL de votre serveur).
+    *   LobeChat détectera automatiquement les capacités du gestionnaire Proxmox.
 
 ### Claude Desktop / Gemini-CLI / Windsurf
 

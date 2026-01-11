@@ -1,0 +1,18 @@
+{
+  "identifier": "proxmox-mcp",
+  "author": "Olivier Marie-Joseph",
+  "createAt": "2026-01-11",
+  "homepage": "https://github.com/olivier-mj/mcp_proxmox",
+  "meta": {
+    "avatar": "https://pbs.twimg.com/profile_images/1661664654955749377/5g1d99lZ_400x400.jpg",
+    "tags": ["proxmox", "infrastructure", "virtualization", "mcp"],
+    "title": "Proxmox Manager",
+    "description": "Manage your Proxmox VE infrastructure: Start/Stop VMs, monitor resources, and manage snapshots."
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://localhost:8000/openapi.json"
+  },
+  "version": "1.0.0",
+  "systemRole": "You are a Proxmox infrastructure manager. You can list nodes, VMs, storage, and perform power actions on machines. Always confirm before stopping or restarting a machine. Use the provided tools to interact with the Proxmox API."
+}

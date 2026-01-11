@@ -30,5 +30,8 @@ USER appuser
 # Définir les variables d'environnement par défaut
 ENV PYTHONUNBUFFERED=1
 
-# Commande pour lancer le serveur MCP
+# Expose the port for the REST API (LobeChat Plugin)
+EXPOSE 8000
+
+# Commande pour lancer le serveur MCP par défaut
 CMD ["python", "-m", "src.server"]

@@ -1,0 +1,819 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Proxmox MCP API",
+    "description": "REST API to control Proxmox VE, compatible with LobeChat Plugins.",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/infrastructure": {
+      "get": {
+        "summary": "List Infrastructure Nodes",
+        "description": "Lists all nodes in the Proxmox cluster with their CPU and RAM usage.",
+        "operationId": "list_infrastructure_infrastructure_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/machines": {
+      "get": {
+        "summary": "List all Machines",
+        "description": "Lists all VMs and Containers (LXC) with optional filtering.",
+        "operationId": "list_machines_machines_get",
+        "parameters": [
+          {
+            "name": "name_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Name Filter"
+            }
+          },
+          {
+            "name": "status_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "enum": [
+                "running",
+                "stopped"
+              ],
+              "title": "Status Filter"
+            }
+          },
+          {
+            "name": "type_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "enum": [
+                "qemu",
+                "lxc"
+              ],
+              "title": "Type Filter"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/storage": {
+      "get": {
+        "summary": "List Storage",
+        "description": "Displays the storage status for all nodes.",
+        "operationId": "list_storage_storage_get",
+        "parameters": [
+          {
+            "name": "content_filter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Content Filter"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/machines/start": {
+      "post": {
+        "summary": "Start a Machine",
+        "description": "Starts a specific machine.",
+        "operationId": "start_machine_machines_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MachineActionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/machines/stop": {
+      "post": {
+        "summary": "Stop a Machine",
+        "description": "Stops a specific machine (shutdown or force stop).",
+        "operationId": "stop_machine_machines_stop_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StopMachineRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/machines/reboot": {
+      "post": {
+        "summary": "Reboot a Machine",
+        "description": "Reboots a specific machine.",
+        "operationId": "reboot_machine_machines_reboot_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MachineActionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/machines/{node}/{vmid}/config": {
+      "get": {
+        "summary": "Get Machine Configuration",
+        "description": "Retrieves the detailed configuration of a machine.",
+        "operationId": "get_machine_config_machines__node___vmid__config_get",
+        "parameters": [
+          {
+            "name": "node",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Node"
+            }
+          },
+          {
+            "name": "vmid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Vmid"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "qemu",
+                "lxc"
+              ],
+              "title": "Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/machines/clone": {
+      "post": {
+        "summary": "Clone a Machine",
+        "description": "Clones a machine.",
+        "operationId": "clone_machine_machines_clone_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CloneRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/snapshots": {
+      "post": {
+        "summary": "Create Snapshot",
+        "description": "Creates a snapshot.",
+        "operationId": "create_snapshot_snapshots_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SnapshotRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List Snapshots",
+        "description": "Lists snapshots.",
+        "operationId": "list_snapshots_snapshots_get",
+        "parameters": [
+          {
+            "name": "node",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Node"
+            }
+          },
+          {
+            "name": "vmid",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Vmid"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "qemu",
+                "lxc"
+              ],
+              "title": "Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/snapshots/rollback": {
+      "post": {
+        "summary": "Rollback Snapshot",
+        "description": "Rolls back to a snapshot.",
+        "operationId": "rollback_snapshot_snapshots_rollback_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RollbackRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/backups": {
+      "post": {
+        "summary": "Create Backup",
+        "description": "Creates a backup.",
+        "operationId": "create_backup_backups_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBackupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "List Backups",
+        "description": "Lists backups.",
+        "operationId": "list_backups_backups_get",
+        "parameters": [
+          {
+            "name": "node",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Node"
+            }
+          },
+          {
+            "name": "storage",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Storage"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CloneRequest": {
+        "properties": {
+          "node": {
+            "type": "string",
+            "title": "Node"
+          },
+          "vmid": {
+            "type": "integer",
+            "title": "Vmid"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "newid": {
+            "type": "integer",
+            "title": "Newid"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "target_node": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Node"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node",
+          "vmid",
+          "type",
+          "newid",
+          "name"
+        ],
+        "title": "CloneRequest"
+      },
+      "CreateBackupRequest": {
+        "properties": {
+          "node": {
+            "type": "string",
+            "title": "Node"
+          },
+          "vmid": {
+            "type": "integer",
+            "title": "Vmid"
+          },
+          "storage": {
+            "type": "string",
+            "title": "Storage"
+          },
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "default": "snapshot"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node",
+          "vmid",
+          "storage"
+        ],
+        "title": "CreateBackupRequest"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "MachineActionRequest": {
+        "properties": {
+          "node": {
+            "type": "string",
+            "title": "Node"
+          },
+          "vmid": {
+            "type": "integer",
+            "title": "Vmid"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node",
+          "vmid",
+          "type"
+        ],
+        "title": "MachineActionRequest"
+      },
+      "RollbackRequest": {
+        "properties": {
+          "node": {
+            "type": "string",
+            "title": "Node"
+          },
+          "vmid": {
+            "type": "integer",
+            "title": "Vmid"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "snapname": {
+            "type": "string",
+            "title": "Snapname"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node",
+          "vmid",
+          "type",
+          "snapname"
+        ],
+        "title": "RollbackRequest"
+      },
+      "SnapshotRequest": {
+        "properties": {
+          "node": {
+            "type": "string",
+            "title": "Node"
+          },
+          "vmid": {
+            "type": "integer",
+            "title": "Vmid"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "snapname": {
+            "type": "string",
+            "title": "Snapname"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node",
+          "vmid",
+          "type",
+          "snapname"
+        ],
+        "title": "SnapshotRequest"
+      },
+      "StopMachineRequest": {
+        "properties": {
+          "node": {
+            "type": "string",
+            "title": "Node"
+          },
+          "vmid": {
+            "type": "integer",
+            "title": "Vmid"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "force": {
+            "type": "boolean",
+            "title": "Force",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "node",
+          "vmid",
+          "type"
+        ],
+        "title": "StopMachineRequest"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}

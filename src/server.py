@@ -5,10 +5,18 @@ from mcp.server.fastmcp import FastMCP
 from src.client import ProxmoxClient
 
 # Configuration du Logging
+LOG_DIR = "logs"
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
+    datefmt='%Y-%m-%d %H:%M:%S',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(os.path.join(LOG_DIR, "mcp_audit.log"))
+    ]
 )
 logger = logging.getLogger("mcp-proxmox")
 
@@ -434,7 +442,8 @@ def set_cloudinit_config(vmid: int, node: str, user: str = None, password: str =
         ssh_keys (str, optional): Public SSH key(s).
         ip_config (str, optional): Network config (default: 'ip=dhcp'). Example static: 'ip=192.168.1.50/24,gw=192.168.1.1'
     """
-    logger.info(f"Tool called: set_cloudinit_config(vmid={vmid}, node={node})")
+    pwd_log = "****" if password else "None"
+    logger.info(f"Tool called: set_cloudinit_config(vmid={vmid}, node={node}, user={user}, password={pwd_log})")
     if not proxmox: return "Client Proxmox non configuré."
     try:
         proxmox.set_cloudinit_config(node, vmid, user, password, ssh_keys, ip_config)

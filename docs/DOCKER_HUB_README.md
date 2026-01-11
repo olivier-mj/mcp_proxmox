@@ -10,17 +10,33 @@ A Python-based **Model Context Protocol (MCP)** server to manage and monitor you
 
 ## 🌟 Features
 
-- 📊 **Monitoring**: View nodes (CPU/RAM), VMs, containers (LXC), and storage status.
-- ⚡ **Management**: Start, stop (graceful/forced), and reboot machines.
+- 📊 **Monitoring**: View nodes (CPU/RAM), VMs, containers (LXC), storage status, and internal IPs (via Agent).
+- ⚡ **Management**: Start, stop (graceful/forced), reboot, and **Clone** (Provisioning) machines.
+- 🏗️ **Orchestration**: **Migrate** machines (live or offline) between nodes in a cluster.
+- 📈 **Analytics**: View **Historical Performance** (CPU/RAM RRD data).
+- 🛠️ **DevOps**: Configure **Cloud-Init**, **Resize** resources, and **Download ISOs/Templates**.
+- 🛡️ **Security**: Audit and manage **Firewall** rules per machine.
+- 🛡️ **Protection**: Manage **Snapshots** and **Backups** directly via AI.
+- 🔗 **Access**: Generate direct links to the **NoVNC Console**.
 - 🔒 **Secure**: Uses Proxmox API Tokens. **Machine deletion is disabled** for safety.
 - 🐳 **Docker-ready**: Works instantly with `docker run`.
+
+## 🛠️ Tool Reference
+
+| Category | Tools |
+|---|---|
+| **Monitoring** | `list_infrastructure`, `list_machines`, `get_machine_config`, `list_storage`, `get_vm_agent_network`, `get_cluster_logs`, `get_machine_performance_history` |
+| **Control** | `start_machine`, `stop_machine`, `reboot_machine`, `get_console_url`, `resize_resources`, `unlock_machine`, `set_machine_tags` |
+| **Provisioning** | `clone_machine`, `set_cloudinit_config`, `list_isos`, `download_iso`, `list_available_lxc_templates`, `download_lxc_template` |
+| **Protection** | `list_snapshots`, `create_snapshot`, `rollback_snapshot`, `delete_snapshot`, `list_backups`, `create_backup`, `list_firewall_rules`, `add_firewall_rule` |
+| **Cluster** | `migrate_machine` |
 
 ## 🔑 Proxmox API Token Creation
 
 1. Go to **Datacenter > Permissions > API Tokens** in Proxmox.
 2. Click **Add**, select user (root@pam), and set an ID (e.g., `mcp`).
 3. **Uncheck** "Privilege Separation".
-4. Copy the Token ID and Secret for the configuration below.
+4. Copy the Token ID and Secret.
 
 ## 🚀 Quick Start (Claude / Gemini-CLI / Windsurf)
 
@@ -35,7 +51,7 @@ Add this to your MCP configuration file:
         "run",
         "-i",
         "--rm",
-        "-e", "PROXMOX_URL=https://192.168.1.100:8006",
+        "-e", "PROXMOX_URL=https://YOUR_PROXMOX_IP:8006",
         "-e", "PROXMOX_USER=root@pam",
         "-e", "PROXMOX_TOKEN_ID=your_token_name",
         "-e", "PROXMOX_TOKEN_SECRET=your_token_secret",
@@ -61,13 +77,12 @@ Add this to your MCP configuration file:
 
 ## 🇫🇷 Version Française
 
-Ce serveur MCP permet à une IA de piloter votre serveur Proxmox (Start/Stop/Reboot/Monitoring) de manière sécurisée via le protocole MCP.
+Ce serveur MCP permet à une IA de piloter votre infrastructure Proxmox (Monitoring, Start/Stop, Clone, Snapshot, Backup, Migration) de manière sécurisée.
 
-**Création du Token Proxmox :**
-1. Allez dans **Datacenter > Permissions > API Tokens**.
-2. Cliquez sur **Add**, choisissez l'utilisateur et un ID (ex: `mcp`).
-3. **Décochez** "Privilege Separation".
-4. Utilisez l'ID et le Secret dans la config ci-dessus.
+**Points forts :**
+- Gestion complète : VMs, Containers, Stockage, Réseau.
+- Sécurisé : Utilise des tokens API, suppression de machines désactivée.
+- Prêt pour Docker : Utilisation immédiate via `docker run`.
 
-**Utilisation rapide :**
-Utilisez la configuration JSON ci-dessus dans vos réglages d'IA (Claude, Cursor, etc.) en remplaçant les valeurs par vos propres identifiants Proxmox.
+**Configuration rapide :**
+Utilisez le bloc JSON ci-dessus dans vos réglages d'IA (Claude, Cursor, etc.) en remplaçant les variables d'environnement par vos accès Proxmox.

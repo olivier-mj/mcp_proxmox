@@ -119,6 +119,35 @@ L'objectif de la V7 est de donner à l'IA une vision historique (performances) e
 
 ---
 
+# 📦 V8 : Visibilité Avancée du Stockage (Terminé)
+
+L'objectif de la V8 est de donner à l'IA une compréhension précise des capacités de stockage du cluster.
+
+## 1. 🔍 Détails des Capacités
+- [x] Afficher les types de contenus acceptés (`iso`, `backup`, `images`, etc.).
+- [x] Indiquer le statut partagé (Shared) du stockage.
+
+## 2. 🧪 Filtrage par Contenu
+- [x] Ajouter un paramètre `content_filter` à `list_storage`.
+- [x] *But :* Permettre à l'IA de trouver instantanément où stocker un backup ou un ISO.
+
+---
+
+# 📝 V9 : Audit & Traçabilité (En cours)
+
+L'objectif de la V9 est de garder une trace persistante et détaillée de toutes les actions effectuées par l'IA sur l'infrastructure.
+
+## 1. 🪵 Journalisation Fichier
+- [ ] Configurer `src/server.py` pour écrire dans `logs/mcp_audit.log`.
+- [ ] Format structuré : `[TIMESTAMP] [TOOL] [ARGS] -> [STATUS]`.
+- [ ] Masquage des données sensibles (mots de passe) dans les logs.
+
+## 2. 💾 Persistance Docker
+- [ ] Monter un volume `./logs:/app/logs` dans `docker-compose.yml`.
+- [ ] Gérer les permissions (UID/GID) pour l'utilisateur non-root.
+
+---
+
 ## Statut Actuel
-- **Branche :** `feature/v7-analyst` (V7).
-- **Prochaine étape :** Release V7 -> Maintenance continue.
+- **Branche :** `main`.
+- **Prochaine étape :** Implémentation V9 (Logs).

@@ -29,9 +29,9 @@ wheels/
 
 # Docker
 .dockerignore
-docs/DOCKER_HUB_README.md
 GEMINI.md
 
 # IDE
 .vscode/
 .idea/
+logs/

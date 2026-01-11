@@ -2,6 +2,8 @@
 
 [![Docker Image CI](https://github.com/olivier-mj/mcp_proxmox/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/olivier-mj/mcp_proxmox/actions/workflows/docker-publish.yml)
 
+[![MCP Badge](https://lobehub.com/badge/mcp/olivier-mj-mcp_proxmox)](https://lobehub.com/mcp/olivier-mj-mcp_proxmox)
+
 **Manage your Proxmox VE infrastructure using AI.**
 *Pilotez votre infrastructure Proxmox VE grâce à l'IA.*
 
@@ -30,7 +32,7 @@ This MCP (Model Context Protocol) server allows LLMs (like Claude, Gemini, etc.)
 | `list_infrastructure` | Shows node status (CPU, RAM, Online/Offline). |
 | `list_machines` | Lists VMs and Containers (Filters: name, status, type). |
 | `get_machine_config` | Shows detailed config (Cores, Memory, Disks). |
-| `list_storage` | Shows storage usage (Used/Free). |
+| `list_storage` | Shows usage & capabilities (Filter: `content_filter`). |
 | `get_vm_agent_network` | Retrieves internal IPs via QEMU Agent. |
 | `get_cluster_logs` | Shows global cluster error logs. |
 | `get_machine_performance_history` | Retrieves RRD history (CPU/RAM trends). |

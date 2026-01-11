@@ -5,10 +5,18 @@ from mcp.server.fastmcp import FastMCP
 from src.client import ProxmoxClient
 
 # Configuration du Logging
+LOG_DIR = "logs"
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    datefmt='%Y-%m-%d %H:%M:%S'
+    datefmt='%Y-%m-%d %H:%M:%S',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(os.path.join(LOG_DIR, "mcp_audit.log"))
+    ]
 )
 logger = logging.getLogger("mcp-proxmox")
 
@@ -96,14 +104,17 @@ def list_machines(name_filter: Optional[str] = None, status_filter: Optional[Lit
         return f"Erreur lors de la récupération des machines : {e}"
 
 @mcp.tool()
-def list_storage():
+def list_storage(content_filter: Optional[str] = None):
     """
     Displays the storage status for all nodes.
 
+    Args:
+        content_filter (str, optional): Filter by content type (e.g., 'iso', 'backup', 'images').
+    
     Returns:
-        str: A formatted string showing used/total space for each storage.
+        str: A formatted string showing used/total space and capabilities for each storage.
     """
-    logger.info("Tool called: list_storage")
+    logger.info(f"Tool called: list_storage(filter={content_filter})")
     if not proxmox: return "Client Proxmox non configuré."
     try:
         nodes = proxmox.get_nodes()
@@ -117,11 +128,23 @@ def list_storage():
             result += f"\nNœud: {node_name}\n"
             try:
                 storages = proxmox.get_storage_status(node_name)
+                found_on_node = False
                 for s in storages:
                     if s.get('active'):
+                        content = s.get('content', '')
+                        
+                        # Application du filtre
+                        if content_filter and content_filter.lower() not in content.lower():
+                            continue
+                            
+                        found_on_node = True
                         used = (s.get('used', 0) / s.get('total', 1)) * 100
                         free_gb = s.get('avail', 0) / (1024**3)
-                        result += f"  - {s['storage']} ({s['type']}) : {used:.1f}% utilisé ({free_gb:.1f} GB libres)\n"
+                        shared = " (Partagé)" if s.get('shared') else ""
+                        result += f"  - {s['storage']} ({s['type']}){shared} : {used:.1f}% utilisé ({free_gb:.1f} GB libres) | Contenu: {content}\n"
+                
+                if not found_on_node and content_filter:
+                    result += f"  - Aucun stockage avec le contenu '{content_filter}' trouvé sur ce nœud.\n"
             except Exception as e:
                 logger.warning(f"Impossible de lire le stockage sur {node_name}: {e}")
                 result += f"  - Erreur de lecture stockage: {e}\n"
@@ -419,7 +442,8 @@ def set_cloudinit_config(vmid: int, node: str, user: str = None, password: str =
         ssh_keys (str, optional): Public SSH key(s).
         ip_config (str, optional): Network config (default: 'ip=dhcp'). Example static: 'ip=192.168.1.50/24,gw=192.168.1.1'
     """
-    logger.info(f"Tool called: set_cloudinit_config(vmid={vmid}, node={node})")
+    pwd_log = "****" if password else "None"
+    logger.info(f"Tool called: set_cloudinit_config(vmid={vmid}, node={node}, user={user}, password={pwd_log})")
     if not proxmox: return "Client Proxmox non configuré."
     try:
         proxmox.set_cloudinit_config(node, vmid, user, password, ssh_keys, ip_config)

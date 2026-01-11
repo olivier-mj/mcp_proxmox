@@ -11,6 +11,8 @@ services:
     stdin_open: true
     # tty est volontairement désactivé pour éviter les interférences avec le format JSON.
     tty: false
+    volumes:
+      - ./logs:/app/logs
 
   lobe-plugin:
     build: .
@@ -22,3 +24,5 @@ services:
     command: uvicorn src.api:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
+    volumes:
+      - ./logs:/app/logs

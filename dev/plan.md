@@ -133,6 +133,21 @@ L'objectif de la V8 est de donner à l'IA une compréhension précise des capaci
 
 ---
 
+# 📝 V9 : Audit & Traçabilité (En cours)
+
+L'objectif de la V9 est de garder une trace persistante et détaillée de toutes les actions effectuées par l'IA sur l'infrastructure.
+
+## 1. 🪵 Journalisation Fichier
+- [ ] Configurer `src/server.py` pour écrire dans `logs/mcp_audit.log`.
+- [ ] Format structuré : `[TIMESTAMP] [TOOL] [ARGS] -> [STATUS]`.
+- [ ] Masquage des données sensibles (mots de passe) dans les logs.
+
+## 2. 💾 Persistance Docker
+- [ ] Monter un volume `./logs:/app/logs` dans `docker-compose.yml`.
+- [ ] Gérer les permissions (UID/GID) pour l'utilisateur non-root.
+
+---
+
 ## Statut Actuel
-- **Branche :** `feature/v8-storage` (V8).
-- **Prochaine étape :** Merge V8 -> Release Finale.
+- **Branche :** `main`.
+- **Prochaine étape :** Implémentation V9 (Logs).

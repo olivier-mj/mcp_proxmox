@@ -25,8 +25,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copier le code source
 COPY src/ ./src/
 
-# Changer la propriété des fichiers pour l'utilisateur non-root
-RUN chown -R appuser:appuser /app
+# Créer le répertoire de logs
+RUN mkdir -p /app/logs && chown -R appuser:appuser /app
 
 # Basculer sur l'utilisateur non-root
 USER appuser

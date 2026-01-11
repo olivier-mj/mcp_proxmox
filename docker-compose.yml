@@ -11,3 +11,5 @@ services:
     stdin_open: true
     # tty est volontairement désactivé pour éviter les interférences avec le format JSON.
     tty: false
+    volumes:
+      - ./logs:/app/logs
